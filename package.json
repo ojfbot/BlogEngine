@@ -1,0 +1,41 @@
+{
+  "name": "blogengine",
+  "version": "0.1.0",
+  "description": "AI-powered blog article and documentation generation system",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.14.1",
+  "scripts": {
+    "dev": "pnpm --filter @blogengine/browser-app dev",
+    "dev:api": "pnpm --filter @blogengine/api dev",
+    "dev:all": "concurrently \"pnpm dev:api\" \"pnpm dev\"",
+    "build": "pnpm --recursive --if-present build",
+    "type-check": "pnpm --recursive --if-present type-check",
+    "clean": "pnpm --recursive --if-present clean && rm -rf node_modules",
+    "lint": "pnpm --recursive --if-present lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "security:check": "./scripts/security-check.sh",
+    "security:scan": "./scripts/security-scan.sh",
+    "security:verify": "./scripts/security-verify.sh",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.17.0",
+    "husky": "^9.1.7",
+    "lerna": "^8.1.9",
+    "prettier": "^3.4.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "author": "",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ]
+}
