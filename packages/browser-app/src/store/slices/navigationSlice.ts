@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TabKey, TAB_ORDER } from '../../models/navigation';
 
-interface NavigationState {
+export interface NavigationState {
   currentTab: TabKey;
   currentTabIndex: number;
   previousTab: TabKey | null;
