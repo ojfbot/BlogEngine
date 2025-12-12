@@ -18,7 +18,11 @@ import {
 import MarkdownMessage from './MarkdownMessage';
 import './CondensedChat.css';
 
-function CondensedChat() {
+interface CondensedChatProps {
+  sidebarExpanded?: boolean;
+}
+
+function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   const dispatch = useAppDispatch();
   const messages = useAppSelector(state => state.chat.messages);
   const draftInput = useAppSelector(state => state.chat.draftInput);
@@ -122,6 +126,9 @@ function CondensedChat() {
       className={`condensed-chat ${isExpanded ? 'expanded' : ''} ${isMinimized ? 'minimized' : ''}`}
       data-element="chat-window"
       data-state={displayState}
+      style={{
+        right: sidebarExpanded ? 'calc(320px + 1rem)' : '72px',
+      }}
     >
       <div
         className="condensed-header"
