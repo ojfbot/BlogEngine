@@ -7,8 +7,15 @@
   flex-direction: column;
   position: relative;
   z-index: 1;
+  transition: margin-right 0.3s ease;
 }
 
+/* Dashboard wrapper when sidebar is open (right side) */
+.dashboard-wrapper.with-sidebar {
+  margin-right: calc(320px + 1rem);
+}
+
+/* Dashboard header with toggle button */
 .dashboard-header {
   display: flex;
   align-items: center;
@@ -16,6 +23,38 @@
   margin-bottom: 1rem;
   position: relative;
   overflow: visible;
+}
+
+/* Dashboard header actions container */
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle-btn {
+  padding: 0.5rem;
+  background: var(--cds-layer);
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--cds-icon-primary);
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--cds-layer-hover);
+  border-color: var(--cds-border-strong);
+}
+
+/* Ensure tooltip appears above all other elements */
+.dashboard-header .cds--popover-container,
+.dashboard-header .cds--popover {
+  z-index: 10000 !important;
 }
 
 .page-header {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Tabs,
   TabList,
@@ -5,7 +6,9 @@ import {
   TabPanels,
   TabPanel,
   Heading,
+  Tooltip,
 } from '@carbon/react';
+import { Menu, Close } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCurrentTab } from '../store/slices/navigationSlice';
 import { TabKey, TAB_ORDER, getTabByKey } from '../models/navigation';
@@ -16,12 +19,15 @@ import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
 import SettingsDashboard from './SettingsDashboard';
 import CondensedChat from './CondensedChat';
+import ThreadSidebar from './ThreadSidebar';
 import './Dashboard.css';
 
 function Dashboard() {
   const dispatch = useAppDispatch();
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const showThreadSidebar = true; // TODO: Make this configurable via settings
 
   const renderTabContent = (tabKey: TabKey) => {
     switch (tabKey) {
@@ -44,9 +50,36 @@ function Dashboard() {
 
   return (
     <>
-      <div className="dashboard-wrapper" data-element="app-container">
+      {/* Thread sidebar for managing conversation sessions */}
+      {showThreadSidebar && (
+        <ThreadSidebar
+          isExpanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      )}
+
+      <div
+        className={`dashboard-wrapper ${showThreadSidebar && sidebarExpanded ? 'with-sidebar' : ''}`}
+        data-element="app-container"
+      >
         <div className="dashboard-header">
           <Heading className="page-header">BlogEngine Dashboard</Heading>
+
+          {/* Thread sidebar toggle button */}
+          {showThreadSidebar && (
+            <Tooltip
+              align="bottom-right"
+              label={sidebarExpanded ? 'Close threads' : 'Show threads'}
+            >
+              <button
+                className="sidebar-toggle-btn"
+                onClick={() => setSidebarExpanded(!sidebarExpanded)}
+                aria-label="Toggle thread sidebar"
+              >
+                {sidebarExpanded ? <Close size={20} /> : <Menu size={20} />}
+              </button>
+            </Tooltip>
+          )}
         </div>
 
         <Tabs
@@ -81,7 +114,7 @@ function Dashboard() {
 
       {/* Show condensed chat on all non-Interactive tabs */}
       {currentTab !== TabKey.INTERACTIVE && (
-        <CondensedChat />
+        <CondensedChat sidebarExpanded={showThreadSidebar && sidebarExpanded} />
       )}
     </>
   );
