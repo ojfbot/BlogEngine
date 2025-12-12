@@ -12,7 +12,7 @@ interface MarkdownMessageProps {
   compact?: boolean;
 }
 
-function MarkdownMessage({ content, suggestions, onExecute, compact = false }: MarkdownMessageProps) {
+function MarkdownMessage({ content, suggestions, onExecute, compact: _compact = false }: MarkdownMessageProps) {
   const dispatch = useAppDispatch();
 
   console.log('[MarkdownMessage] Rendering with content:', content.substring(0, 100));
