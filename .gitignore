@@ -1,0 +1,60 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+env.json
+
+# Private data directories
+/drafts/
+/content/
+/published/
+personal/
+
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# pnpm
+.pnpm-store/
+.pnpm-debug.log
+# Note: pnpm-lock.yaml IS committed for reproducible builds
+# DO NOT add it to .gitignore
+
+# npm (legacy - to be removed after migration)
+package-lock.json
+npm-debug.log*
+
+# Testing
+/coverage
+
+# Production builds (NEVER commit build artifacts)
+/build
+/dist
+build/
+dist/
+*.tsbuildinfo
+
+# Misc
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.claude/settings.local.json
+
+# Temporary files
+*.tmp
+.cache/
+
+# SQLite databases
+*.db
+*.db-wal
+*.db-shm
