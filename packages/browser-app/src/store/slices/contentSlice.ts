@@ -12,7 +12,7 @@ export interface Article {
   readingTime: number;
 }
 
-interface ContentState {
+export interface ContentState {
   articles: Article[];
   selectedArticle: Article | null;
   isLoading: boolean;

@@ -9,7 +9,7 @@ export interface ChatMessage {
 
 type DisplayState = 'minimized' | 'collapsed' | 'expanded';
 
-interface ChatState {
+export interface ChatState {
   messages: ChatMessage[];
   draftInput: string;
   isLoading: boolean;
