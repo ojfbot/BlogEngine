@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mrplug": {
+      "command": "node",
+      "args": ["/Users/yuri/ojfbot/mrplug/mrplug-mcp-server/dist/stdio-server.js"]
+    }
+  }
+}
