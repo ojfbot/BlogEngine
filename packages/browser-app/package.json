@@ -1,0 +1,39 @@
+{
+  "name": "@blogengine/browser-app",
+  "version": "0.1.0",
+  "description": "React + Carbon Design System UI for BlogEngine",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@blogengine/agent-core": "workspace:*",
+    "@carbon/icons-react": "^11.51.0",
+    "@carbon/react": "1.67.0",
+    "@carbon/styles": "^1.96.0",
+    "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.2",
+    "react-redux": "^9.2.0",
+    "rehype-highlight": "^7.0.1",
+    "remark-gfm": "^4.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "sass": "^1.83.4",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

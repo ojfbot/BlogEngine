@@ -1,0 +1,97 @@
+/* General dashboard section styles */
+.dashboard-section {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.dashboard-section h3 {
+  font-size: 1.75rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-section > p {
+  color: var(--cds-text-secondary);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+/* Content Library Styles */
+.content-library {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Generate Dashboard Styles */
+.generate-dashboard {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.generate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.generate-grid .cds--tile {
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.generate-grid .cds--tile:hover {
+  transform: translateY(-4px);
+  border-color: var(--cds-border-interactive);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.generate-grid .cds--tile h4 {
+  margin: 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.generate-grid .cds--tile p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--cds-text-secondary);
+}
+
+/* Platform Grid */
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.platform-grid .cds--tile {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.platform-grid .cds--tile h4 {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Settings form */
+.settings-container {
+  max-width: 800px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.settings-section {
+  margin-bottom: 1.5rem;
+}
+
+.settings-section h4 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
