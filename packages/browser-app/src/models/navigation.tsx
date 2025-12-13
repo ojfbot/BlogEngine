@@ -5,7 +5,6 @@ import {
   Add,
   Upload,
   Notebook,
-  Settings,
 } from '@carbon/icons-react';
 
 export enum TabKey {
@@ -14,7 +13,6 @@ export enum TabKey {
   GENERATE = 'generate',
   NOTION = 'notion',
   PUBLISHING = 'publishing',
-  SETTINGS = 'settings',
 }
 
 export interface Tab {
@@ -29,7 +27,6 @@ export const TAB_ORDER: TabKey[] = [
   TabKey.GENERATE,
   TabKey.NOTION,
   TabKey.PUBLISHING,
-  TabKey.SETTINGS,
 ];
 
 export const TABS: Record<TabKey, Tab> = {
@@ -57,11 +54,6 @@ export const TABS: Record<TabKey, Tab> = {
     key: TabKey.PUBLISHING,
     label: 'Publishing',
     icon: <Upload size={16} />,
-  },
-  [TabKey.SETTINGS]: {
-    key: TabKey.SETTINGS,
-    label: 'Settings',
-    icon: <Settings size={16} />,
   },
 };
 

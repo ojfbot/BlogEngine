@@ -17,7 +17,6 @@ import ContentLibrary from './ContentLibrary';
 import GenerateDashboard from './GenerateDashboard';
 import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
-import SettingsDashboard from './SettingsDashboard';
 import CondensedChat from './CondensedChat';
 import ThreadSidebar from './ThreadSidebar';
 import './Dashboard.css';
@@ -41,8 +40,6 @@ function Dashboard() {
         return <NotionDashboard />;
       case TabKey.PUBLISHING:
         return <PublishingDashboard />;
-      case TabKey.SETTINGS:
-        return <SettingsDashboard />;
       default:
         return <div>Unknown tab</div>;
     }
