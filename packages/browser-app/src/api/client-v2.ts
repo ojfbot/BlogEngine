@@ -14,8 +14,9 @@ export class ApiClientV2 {
   private client: AxiosInstance;
   private baseUrl: string;
 
-  constructor(baseUrl: string = 'http://localhost:3001/api/v2') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    // Use environment variable if available, otherwise fallback to localhost
+    this.baseUrl = baseUrl || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v2';
     this.client = axios.create({
       baseURL: this.baseUrl,
       timeout: 30000,
@@ -84,11 +85,13 @@ export class ApiClientV2 {
   /**
    * Send a message and stream the response
    * @param request Chat request with message and optional threadId
-   * @param onToken Callback for each token received
-   * @param onNodeStart Callback when agent node starts
-   * @param onNodeEnd Callback when agent node ends
-   * @param onError Callback for errors
-   * @returns Promise that resolves with the complete response
+   * @param callbacks Object containing callback functions and optional AbortSignal
+   * @param callbacks.onToken Callback for each token received
+   * @param callbacks.onNodeStart Callback when agent node starts
+   * @param callbacks.onNodeEnd Callback when agent node ends
+   * @param callbacks.onError Callback for errors
+   * @param callbacks.signal Optional AbortSignal to cancel the stream
+   * @returns Promise that resolves with the complete response and a cleanup function
    */
   async chatStream(
     request: ChatRequest,
@@ -97,6 +100,7 @@ export class ApiClientV2 {
       onNodeStart?: (node: string) => void;
       onNodeEnd?: (node: string) => void;
       onError?: (error: string) => void;
+      signal?: AbortSignal;
     } = {}
   ): Promise<ChatResponse> {
     return new Promise((resolve, reject) => {
@@ -114,6 +118,14 @@ export class ApiClientV2 {
       let messageId = '';
       let threadId = '';
       let createdAt = '';
+
+      // Set up abort signal listener if provided
+      if (callbacks.signal) {
+        callbacks.signal.addEventListener('abort', () => {
+          eventSource.close();
+          reject(new Error('Stream aborted'));
+        });
+      }
 
       eventSource.addEventListener('start', (e: Event) => {
         const data = JSON.parse((e as MessageEvent).data);
@@ -187,7 +199,8 @@ export class ApiClientV2 {
     try {
       await this.client.get('/health');
       return true;
-    } catch {
+    } catch (error) {
+      console.error('API health check failed:', error);
       return false;
     }
   }

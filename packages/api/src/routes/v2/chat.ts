@@ -26,9 +26,17 @@ router.get('/stream', async (req: Request, res: Response, _next: NextFunction) =
     // Send initial connection event
     res.write(`event: connected\ndata: ${JSON.stringify({ status: 'connected' })}\n\n`);
 
-    const parsedMetadata = metadata && typeof metadata === 'string'
-      ? JSON.parse(metadata)
-      : undefined;
+    // Parse metadata with error handling
+    let parsedMetadata: Record<string, unknown> | undefined;
+    if (metadata && typeof metadata === 'string') {
+      try {
+        parsedMetadata = JSON.parse(metadata);
+      } catch (parseError) {
+        logger.error({ parseError, metadata }, 'Failed to parse metadata');
+        res.status(400).json({ error: 'Invalid JSON in metadata parameter' });
+        return;
+      }
+    }
 
     await chatService.streamChat(
       {

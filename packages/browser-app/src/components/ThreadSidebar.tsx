@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   Button,
   SkeletonText,
+  Modal,
 } from '@carbon/react';
 import {
   Add,
@@ -17,6 +18,7 @@ import {
   setCurrentThreadId,
   fetchThread,
 } from '../store/slices/threadsSlice';
+import { getUserId } from '../utils/user';
 import './ThreadSidebar.css';
 
 interface ThreadSidebarProps {
@@ -30,18 +32,17 @@ function ThreadSidebar({ isExpanded, onToggle }: ThreadSidebarProps) {
     state => state.threads
   );
   const [hoveredThreadId, setHoveredThreadId] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [threadToDelete, setThreadToDelete] = useState<string | null>(null);
 
   // Load threads on mount
   useEffect(() => {
-    const userId = localStorage.getItem('userId') || 'browser-user';
-    if (!localStorage.getItem('userId')) {
-      localStorage.setItem('userId', userId);
-    }
+    const userId = getUserId();
     dispatch(fetchThreads({ userId }));
   }, [dispatch]);
 
   const handleCreateThread = async () => {
-    const userId = localStorage.getItem('userId') || 'browser-user';
+    const userId = getUserId();
     const timestamp = new Date().toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -61,15 +62,27 @@ function ThreadSidebar({ isExpanded, onToggle }: ThreadSidebarProps) {
     }
   };
 
-  const handleDeleteThread = async (threadId: string, e: React.MouseEvent) => {
+  const handleDeleteClick = (threadId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Delete this conversation? This action cannot be undone.')) {
-      await dispatch(deleteThread(threadId));
+    setThreadToDelete(threadId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (threadToDelete) {
+      await dispatch(deleteThread(threadToDelete));
+      setDeleteModalOpen(false);
+      setThreadToDelete(null);
     }
   };
 
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
+    setThreadToDelete(null);
+  };
+
   const handleRefresh = () => {
-    const userId = localStorage.getItem('userId') || 'browser-user';
+    const userId = getUserId();
     dispatch(fetchThreads({ userId }));
   };
 
@@ -164,7 +177,7 @@ function ThreadSidebar({ isExpanded, onToggle }: ThreadSidebarProps) {
                       size="sm"
                       hasIconOnly
                       iconDescription="Delete conversation"
-                      onClick={(e: React.MouseEvent) => handleDeleteThread(thread.threadId, e)}
+                      onClick={(e: React.MouseEvent) => handleDeleteClick(thread.threadId, e)}
                       className="thread-item-delete"
                     >
                       <TrashCan />
@@ -181,6 +194,21 @@ function ThreadSidebar({ isExpanded, onToggle }: ThreadSidebarProps) {
       {isExpanded && (
         <div className="thread-sidebar-overlay" onClick={(e: React.MouseEvent) => { e.preventDefault(); onToggle(); }} />
       )}
+
+      {/* Delete confirmation modal */}
+      <Modal
+        open={deleteModalOpen}
+        onRequestClose={handleCancelDelete}
+        onRequestSubmit={handleConfirmDelete}
+        modalHeading="Delete conversation"
+        modalLabel="Confirm action"
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
+        danger
+        size="sm"
+      >
+        <p>Are you sure you want to delete this conversation? This action cannot be undone.</p>
+      </Modal>
     </>
   );
 }
