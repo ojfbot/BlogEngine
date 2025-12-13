@@ -22,7 +22,7 @@ pnpm dev:all
 
 # Start individual services
 pnpm dev:api          # API server at http://localhost:3001
-pnpm dev              # Browser UI at http://localhost:3000
+pnpm dev              # Browser UI at http://localhost:3005
 
 # Type checking
 pnpm type-check       # Check all packages
@@ -106,7 +106,7 @@ Configuration is loaded via `@blogengine/agent-core/utils/config.ts`:
 **@blogengine/agent-core**
 - Core types, Zod schemas, and utilities
 - Configuration management (`env.json` loading)
-- Shared models: Article, ContentTypes, NotionMapping, Publishing
+- Shared models: Article, ContentTypes, NotionMapping, Publishing, Thread, ThreadMessage
 - Logger (Pino-based)
 - **No LangGraph or agent logic** - pure foundational code
 
@@ -126,8 +126,10 @@ Configuration is loaded via `@blogengine/agent-core/utils/config.ts`:
 - React 18 + TypeScript + Vite
 - IBM Carbon Design System (v1.67) for UI
 - Redux Toolkit for state management
-- Components: InteractiveChat, CondensedChat, Dashboard, ContentLibrary, NotionDashboard, PublishingDashboard, GenerateDashboard, SettingsDashboard
-- Communicates with API via axios
+- Components: InteractiveChat, CondensedChat, Dashboard, ContentLibrary, NotionDashboard, PublishingDashboard, GenerateDashboard, ThreadSidebar
+- Multithread conversation management with collapsible sidebar
+- API client v2 with Server-Sent Events (SSE) for streaming chat
+- Communicates with API via axios and EventSource
 
 **@blogengine/notion-integration**
 - Notion API wrapper and sync
@@ -189,6 +191,18 @@ Dependencies are managed via PNPM workspace catalog in `pnpm-workspace.yaml`. Wh
 ### RAG
 - `POST /api/v1/rag/index` - Index content
 - `POST /api/v1/rag/search` - Semantic search
+
+### Multithread Conversations (v2)
+- `GET /api/v2/threads` - List all conversation threads for user
+- `POST /api/v2/threads` - Create new conversation thread
+- `GET /api/v2/threads/:threadId` - Get thread with message history
+- `PUT /api/v2/threads/:threadId` - Update thread metadata
+- `DELETE /api/v2/threads/:threadId` - Delete conversation thread
+- `POST /api/v2/chat` - Send chat message (non-streaming)
+- `GET /api/v2/chat/stream` - Stream chat responses via Server-Sent Events (SSE)
+- `GET /api/v2/health` - Health check for v2 API
+
+**Note**: v2 chat endpoints currently use mock AI responses (placeholder implementation). Agent-graph integration is planned for future updates.
 
 ## Security Considerations
 

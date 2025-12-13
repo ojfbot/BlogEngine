@@ -21,6 +21,18 @@ export interface Tab {
   icon: ReactNode;
 }
 
+/**
+ * Canonical tab order for the dashboard navigation.
+ *
+ * Order rationale:
+ * 1. INTERACTIVE - Primary chat interface (most frequent use)
+ * 2. LIBRARY - Content browsing (supports generation workflows)
+ * 3. GENERATE - Content creation (core feature)
+ * 4. NOTION - Integration/sync (secondary workflow)
+ * 5. PUBLISHING - Final step in content workflow
+ *
+ * This order follows the typical user journey: chat → browse → create → sync → publish
+ */
 export const TAB_ORDER: TabKey[] = [
   TabKey.INTERACTIVE,
   TabKey.LIBRARY,
