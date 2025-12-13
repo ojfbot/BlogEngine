@@ -10,22 +10,25 @@ import {
   SideNavItems,
   TextInput,
 } from '@carbon/react';
-import { Asleep, Light } from '@carbon/icons-react';
+import { Asleep, Light, Settings } from '@carbon/icons-react';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import Dashboard from './components/Dashboard';
+import SettingsModal from './components/SettingsModal';
 import './App.scss';
 
 function App() {
   const [theme, setTheme] = useState<'white' | 'g100'>('g100');
   const [sideNavExpanded, setSideNavExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Mock applications for demo
   const applications = [
     'BlogEngine',
     'CV Builder',
+    'TripPlanner',
     'Project Manager',
     'Analytics Dashboard',
   ];
@@ -34,6 +37,7 @@ function App() {
   const appPorts: Record<string, number> = {
     'BlogEngine': 3005,
     'CV Builder': 3000,
+    'TripPlanner': 3010,
   };
 
   const filteredApplications = applications.filter(app =>
@@ -84,6 +88,14 @@ function App() {
             />
             <HeaderName prefix="">BlogEngine</HeaderName>
             <HeaderGlobalBar>
+              <HeaderGlobalAction
+                data-element="settings-toggle"
+                aria-label="Settings"
+                tooltipAlignment="end"
+                onClick={() => setSettingsModalOpen(true)}
+              >
+                <Settings size={20} />
+              </HeaderGlobalAction>
               <HeaderGlobalAction
                 data-element="theme-toggle"
                 aria-label="Toggle theme"
@@ -144,6 +156,12 @@ function App() {
           <div className="main-content" style={{ marginLeft: sideNavExpanded ? '256px' : '0', transition: 'margin-left 0.11s cubic-bezier(0.2, 0, 1, 0.9)', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
             <Dashboard />
           </div>
+
+          {/* Settings Modal */}
+          <SettingsModal
+            open={settingsModalOpen}
+            onClose={() => setSettingsModalOpen(false)}
+          />
         </div>
       </Theme>
     </Provider>
