@@ -1,15 +1,7 @@
 import { useState } from 'react';
 import { Tile, TextInput, Toggle } from '@carbon/react';
+import { STORAGE_KEYS } from '../constants.js';
 import './DashboardSection.css';
-
-// Settings storage keys
-const STORAGE_KEYS = {
-  ANTHROPIC_API_KEY: 'blogengine_anthropic_api_key',
-  OPENAI_API_KEY: 'blogengine_openai_api_key',
-  NOTION_API_KEY: 'blogengine_notion_api_key',
-  AUTO_SAVE: 'blogengine_auto_save',
-  SEO_SUGGESTIONS: 'blogengine_seo_suggestions',
-};
 
 export interface SettingsFormData {
   anthropicApiKey: string;

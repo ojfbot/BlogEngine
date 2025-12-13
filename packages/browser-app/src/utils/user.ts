@@ -1,33 +1,36 @@
+import { generateUUID } from './uuid.js';
+import { STORAGE_KEYS, USER_ID_PREFIX } from '../constants.js';
+
 /**
  * Get the current user ID from localStorage.
- * If no userId is stored, sets and returns a default 'browser-user' ID.
+ * If no userId is stored, generates and stores a unique anonymous user ID.
  *
  * Note: This is a temporary solution for MVP. In production, this should
  * be replaced with proper authentication/session management.
  */
 export function getUserId(): string {
-  const storedUserId = localStorage.getItem('userId');
+  const storedUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
   if (storedUserId) {
     return storedUserId;
   }
 
-  // Default user ID for dev/demo purposes
-  const defaultUserId = 'browser-user';
-  localStorage.setItem('userId', defaultUserId);
-  return defaultUserId;
+  // Generate unique anonymous user ID for this browser instance
+  const anonymousUserId = `${USER_ID_PREFIX}${generateUUID()}`;
+  localStorage.setItem(STORAGE_KEYS.USER_ID, anonymousUserId);
+  return anonymousUserId;
 }
 
 /**
  * Set the user ID in localStorage
  */
 export function setUserId(userId: string): void {
-  localStorage.setItem('userId', userId);
+  localStorage.setItem(STORAGE_KEYS.USER_ID, userId);
 }
 
 /**
  * Clear the user ID from localStorage
  */
 export function clearUserId(): void {
-  localStorage.removeItem('userId');
+  localStorage.removeItem(STORAGE_KEYS.USER_ID);
 }
