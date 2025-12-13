@@ -12,21 +12,13 @@ router.get('/stream', async (req: Request, res: Response, _next: NextFunction) =
   try {
     const { threadId, userId, message, metadata } = req.query;
 
+    // Validate input BEFORE setting any headers
     if (!message || typeof message !== 'string') {
       res.status(400).json({ error: 'Message is required' });
       return;
     }
 
-    // Set up SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
-
-    // Send initial connection event
-    res.write(`event: connected\ndata: ${JSON.stringify({ status: 'connected' })}\n\n`);
-
-    // Parse metadata with error handling
+    // Parse and validate metadata BEFORE setting headers
     let parsedMetadata: Record<string, unknown> | undefined;
     if (metadata && typeof metadata === 'string') {
       try {
@@ -37,6 +29,15 @@ router.get('/stream', async (req: Request, res: Response, _next: NextFunction) =
         return;
       }
     }
+
+    // Now set up SSE headers (after all validation passes)
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+
+    // Send initial connection event
+    res.write(`event: connected\ndata: ${JSON.stringify({ status: 'connected' })}\n\n`);
 
     await chatService.streamChat(
       {
