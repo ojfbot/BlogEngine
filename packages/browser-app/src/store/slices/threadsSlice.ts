@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type { Thread, ThreadWithMessages } from '@blogengine/agent-core';
 import { apiClientV2 } from '../../api/client-v2';
+import { generateUUID } from '../../utils/uuid';
 
 export interface ThreadsState {
   threads: Thread[];
@@ -100,7 +101,7 @@ const threadsSlice = createSlice({
     addMessageToCurrentThread: (state, action: PayloadAction<{ role: 'user' | 'assistant'; content: string }>) => {
       if (state.currentThread) {
         state.currentThread.messages.push({
-          messageId: crypto.randomUUID(),
+          messageId: generateUUID(),
           threadId: state.currentThread.threadId,
           role: action.payload.role,
           content: action.payload.content,
