@@ -126,9 +126,10 @@ Configuration is loaded via `@blogengine/agent-core/utils/config.ts`:
 - React 18 + TypeScript + Vite
 - IBM Carbon Design System (v1.67) for UI
 - Redux Toolkit for state management
-- Components: InteractiveChat, CondensedChat, Dashboard, ContentLibrary, NotionDashboard, PublishingDashboard, GenerateDashboard, ThreadSidebar
+- Components: InteractiveChat, CondensedChat, Dashboard, ProductLibrary, WorkingMemoryDashboard, NotionDashboard, PublishingDashboard, GenerateDashboard, PodcastResponder, ThreadSidebar
 - Multithread conversation management with collapsible sidebar
 - API client v2 with Server-Sent Events (SSE) for streaming chat
+- Product-oriented framing: focus on published products across platforms
 - Communicates with API via axios and EventSource
 
 **@blogengine/notion-integration**
