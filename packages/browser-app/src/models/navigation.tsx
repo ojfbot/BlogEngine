@@ -5,12 +5,14 @@ import {
   Add,
   Upload,
   Notebook,
+  BookmarkAdd,
 } from '@carbon/icons-react';
 
 export enum TabKey {
   INTERACTIVE = 'interactive',
   LIBRARY = 'library',
   GENERATE = 'generate',
+  WORKING_MEMORY = 'working-memory',
   NOTION = 'notion',
   PUBLISHING = 'publishing',
 }
@@ -26,17 +28,19 @@ export interface Tab {
  *
  * Order rationale:
  * 1. INTERACTIVE - Primary chat interface (most frequent use)
- * 2. LIBRARY - Content browsing (supports generation workflows)
+ * 2. LIBRARY - Published products browsing (supports generation workflows)
  * 3. GENERATE - Content creation (core feature)
- * 4. NOTION - Integration/sync (secondary workflow)
- * 5. PUBLISHING - Final step in content workflow
+ * 4. WORKING_MEMORY - Reference materials and research storage
+ * 5. NOTION - Integration/sync (secondary workflow)
+ * 6. PUBLISHING - Final step in content workflow
  *
- * This order follows the typical user journey: chat → browse → create → sync → publish
+ * This order follows the typical user journey: chat → browse products → create → reference → sync → publish
  */
 export const TAB_ORDER: TabKey[] = [
   TabKey.INTERACTIVE,
   TabKey.LIBRARY,
   TabKey.GENERATE,
+  TabKey.WORKING_MEMORY,
   TabKey.NOTION,
   TabKey.PUBLISHING,
 ];
@@ -49,13 +53,18 @@ export const TABS: Record<TabKey, Tab> = {
   },
   [TabKey.LIBRARY]: {
     key: TabKey.LIBRARY,
-    label: 'Content Library',
+    label: 'Product Library',
     icon: <DocumentBlank size={16} />,
   },
   [TabKey.GENERATE]: {
     key: TabKey.GENERATE,
     label: 'Generate',
     icon: <Add size={16} />,
+  },
+  [TabKey.WORKING_MEMORY]: {
+    key: TabKey.WORKING_MEMORY,
+    label: 'Working Memory',
+    icon: <BookmarkAdd size={16} />,
   },
   [TabKey.NOTION]: {
     key: TabKey.NOTION,
