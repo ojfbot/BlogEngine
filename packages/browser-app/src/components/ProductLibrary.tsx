@@ -2,7 +2,7 @@ import { DataTable, Table, TableHead, TableRow, TableHeader, TableBody, TableCel
 import { Add } from '@carbon/icons-react';
 import './DashboardSection.css';
 
-function ContentLibrary() {
+function ProductLibrary() {
   const headers = [
     { key: 'title', header: 'Title' },
     { key: 'type', header: 'Type' },
@@ -17,14 +17,14 @@ function ContentLibrary() {
   ];
 
   return (
-    <div className="content-library">
+    <div className="product-library">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h3>Content Library</h3>
-          <p style={{ marginBottom: 0 }}>Manage your blog articles, tutorials, and documentation</p>
+          <h3>Product Library</h3>
+          <p style={{ marginBottom: 0 }}>Manage published products across platforms: articles, tutorials, and documentation</p>
         </div>
         <Button kind="primary" renderIcon={Add}>
-          New Content
+          New Product
         </Button>
       </div>
 
@@ -56,4 +56,4 @@ function ContentLibrary() {
   );
 }
 
-export default ContentLibrary;
+export default ProductLibrary;

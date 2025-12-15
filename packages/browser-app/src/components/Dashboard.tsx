@@ -13,8 +13,9 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCurrentTab } from '../store/slices/navigationSlice';
 import { TabKey, TAB_ORDER, getTabByKey } from '../models/navigation';
 import InteractiveChat from './InteractiveChat';
-import ContentLibrary from './ContentLibrary';
+import ProductLibrary from './ProductLibrary';
 import GenerateDashboard from './GenerateDashboard';
+import WorkingMemoryDashboard from './WorkingMemoryDashboard';
 import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
 import CondensedChat from './CondensedChat';
@@ -33,9 +34,11 @@ function Dashboard() {
       case TabKey.INTERACTIVE:
         return <InteractiveChat />;
       case TabKey.LIBRARY:
-        return <ContentLibrary />;
+        return <ProductLibrary />;
       case TabKey.GENERATE:
         return <GenerateDashboard />;
+      case TabKey.WORKING_MEMORY:
+        return <WorkingMemoryDashboard />;
       case TabKey.NOTION:
         return <NotionDashboard />;
       case TabKey.PUBLISHING:
