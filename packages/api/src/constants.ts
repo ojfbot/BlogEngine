@@ -19,7 +19,9 @@ export const VALIDATION_LIMITS = {
 } as const;
 
 // Server Configuration
+// Port 3006 matches frame-agent's BLOGENGINE_API_URL default (http://localhost:3006).
+// Port layout: cv-builder=3001, BlogEngine=3006, TripPlanner=3011.
 export const SERVER = {
-  DEFAULT_PORT: 3001,
+  DEFAULT_PORT: 3006,
   DEFAULT_CORS_ORIGIN: 'http://localhost:3005',
 } as const;

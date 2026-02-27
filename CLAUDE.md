@@ -111,15 +111,16 @@ Configuration is loaded via `@blogengine/agent-core/utils/config.ts`:
 - **No LangGraph or agent logic** - pure foundational code
 
 **@blogengine/agent-graph**
-- LangGraph multi-agent orchestration
-- Agent nodes: OrchestratorNode, ArticleGeneratorNode, TutorialGeneratorNode, DocumentationGeneratorNode, ResearchAgentNode, SEOOptimizerNode, EditorAgentNode, NotionSyncNode, PublishingNode
+- LangGraph multi-agent orchestration (9 nodes, SQLite checkpointer)
+- Nodes: OrchestratorNode, MediaIngestionNode, ConversationContextNode, ArticleGeneratorNode, PodcastResponderNode, ToneCheckerNode (hard cap=2), EditorNode, SEOOptimizerNode, RagRetrievalNode (Phase D stub)
+- State: `BlogEngineState` with `messagesReducer` and `nodeOrderReducer` accumulators
 - Depends on: agent-core, notion-integration, rag-service
-- Uses Anthropic SDK, LangChain, OpenAI
+- Uses `@langchain/anthropic`, `@langchain/langgraph`, `better-sqlite3`
 
 **@blogengine/api**
-- Express.js REST API backend (port 3001)
+- Express.js REST API backend (port **3006** — see ADR-001)
 - Routes for chat, content generation, Notion sync, publishing, RAG
-- Middleware: CORS, Helmet, rate limiting
+- Middleware: CORS, Helmet, rate limiting, JWT (`requireAuth`)
 - Depends on all other packages (orchestration layer)
 
 **@blogengine/browser-app**
@@ -199,11 +200,12 @@ Dependencies are managed via PNPM workspace catalog in `pnpm-workspace.yaml`. Wh
 - `GET /api/v2/threads/:threadId` - Get thread with message history
 - `PUT /api/v2/threads/:threadId` - Update thread metadata
 - `DELETE /api/v2/threads/:threadId` - Delete conversation thread
-- `POST /api/v2/chat` - Send chat message (non-streaming)
+- `POST /api/v2/chat` - Send chat message (non-streaming) via agent graph
 - `GET /api/v2/chat/stream` - Stream chat responses via Server-Sent Events (SSE)
 - `GET /api/v2/health` - Health check for v2 API
+- `POST /api/v2/auth/token` - Issue JWT for a userId (Phase B: no credential check — Phase C adds verification)
 
-**Note**: v2 chat endpoints currently use mock AI responses (placeholder implementation). Agent-graph integration is planned for future updates.
+**Auth**: All `/api/v2/*` routes (except `/api/v2/auth/token`) require `Authorization: Bearer <token>`. Set `mockAuth: true` in `env.json` to bypass JWT for local dev (must be `false` before Phase C merge — see TECHDEBT TD-009).
 
 ## Security Considerations
 

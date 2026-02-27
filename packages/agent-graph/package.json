@@ -1,0 +1,48 @@
+{
+  "name": "@blogengine/agent-graph",
+  "version": "0.1.0",
+  "description": "LangGraph agents and orchestration for BlogEngine",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./graphs/*": "./dist/graphs/*.js",
+    "./nodes/*": "./dist/nodes/*.js",
+    "./state/*": "./dist/state/*.js",
+    "./tools/*": "./dist/tools/*.js",
+    "./chains/*": "./dist/chains/*.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@blogengine/agent-core": "workspace:*",
+    "@blogengine/notion-integration": "workspace:*",
+    "@blogengine/rag-service": "workspace:*",
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@langchain/anthropic": "^0.3.9",
+    "@langchain/openai": "^0.3.14",
+    "@langchain/core": "^0.3.26",
+    "@langchain/langgraph": "^0.2.19",
+    "@langchain/community": "^0.3.21",
+    "langchain": "^0.3.7",
+    "better-sqlite3": "^11.8.1",
+    "pg": "^8.13.1",
+    "pino": "^9.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

@@ -5,6 +5,9 @@ import rateLimit from 'express-rate-limit';
 import { logger } from '@blogengine/agent-core';
 import threadsRouter from './routes/v2/threads.js';
 import chatRouter from './routes/v2/chat.js';
+import authRouter from './routes/v2/auth.js';
+import postsRouter from './routes/v2/posts.js';
+import { requireAuth } from './middleware/auth.js';
 import { RATE_LIMIT, SERVER } from './constants.js';
 
 const app = express();
@@ -62,9 +65,16 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// V2 API routes with rate limiting
-app.use('/api/v2/threads', generalLimiter, threadsRouter);
-app.use('/api/v2/chat', chatLimiter, chatRouter);
+// Auth endpoint — no JWT required to issue a token
+app.use('/api/v2/auth', generalLimiter, authRouter);
+
+// V2 API routes — JWT required
+app.use('/api/v2/threads', generalLimiter, requireAuth, threadsRouter);
+app.use('/api/v2/chat', chatLimiter, requireAuth, chatRouter);
+
+// Posts endpoint — called by BlogEngineDomainAgent.fetchPosts() in frame-agent.
+// Mounted at /api/posts (not /api/v2/posts) to match frame-agent's hardcoded path.
+app.use('/api/posts', generalLimiter, postsRouter);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {

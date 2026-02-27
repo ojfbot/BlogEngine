@@ -9,6 +9,8 @@ env.json
 /content/
 /published/
 personal/
+# File-backed thread storage (persisted locally, not committed)
+.data/
 
 # Dependencies
 node_modules/

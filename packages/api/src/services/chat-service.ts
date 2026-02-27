@@ -1,7 +1,9 @@
 import { randomUUID } from 'crypto';
 import type { ChatRequest, ChatResponse } from '@blogengine/agent-core';
+import { logger, getConfig } from '@blogengine/agent-core';
+import { createBlogEngineGraph, createInitialState } from '@blogengine/agent-graph';
+import type { CompiledBlogEngineGraph } from '@blogengine/agent-graph';
 import { threadService } from './thread-service.js';
-import { logger } from '@blogengine/agent-core';
 
 interface StreamCallbacks {
   onStart?: (data: { messageId: string; threadId: string; createdAt: string }) => void;
@@ -13,18 +15,32 @@ interface StreamCallbacks {
 }
 
 /**
- * Chat service for handling AI conversations
+ * Chat service — delegates to the BlogEngine agent graph.
  */
 class ChatService {
+  private graph: CompiledBlogEngineGraph | null = null;
+
+  private getGraph(): CompiledBlogEngineGraph {
+    if (!this.graph) {
+      const config = getConfig();
+      this.graph = createBlogEngineGraph({
+        apiKey: config.anthropicApiKey,
+        model: config.model,
+      });
+    }
+    return this.graph;
+  }
+
   /**
-   * Stream chat response
+   * Stream chat response via agent graph.
+   * Phase B: node-level events are streamed; draft tokens are emitted on completion.
+   * Phase C: switch to streamEvents for per-token LLM streaming.
    */
   async streamChat(
     request: ChatRequest,
     callbacks: StreamCallbacks
   ): Promise<void> {
     try {
-      // Get or create thread
       let threadId = request.threadId;
       if (!threadId) {
         const thread = await threadService.createThread({
@@ -34,37 +50,48 @@ class ChatService {
         threadId = thread.threadId;
       }
 
-      // Add user message to thread
       await threadService.addMessage(threadId, {
         role: 'user',
         content: request.message,
         metadata: request.metadata,
       });
 
-      // Generate response
       const messageId = randomUUID();
       const createdAt = new Date().toISOString();
+      callbacks.onStart?.({ messageId, threadId, createdAt });
 
-      callbacks.onStart?.({
-        messageId,
-        threadId,
-        createdAt,
+      const initialState = createInitialState(request.userId ?? 'anonymous', threadId);
+      const graphState = { ...initialState, userRequest: request.message };
+
+      // Stream node-level updates so the UI can show progress.
+      let finalDraft = '';
+      const stream = await this.getGraph().stream(graphState, {
+        configurable: { thread_id: threadId },
+        streamMode: 'updates',
       });
 
-      // Simulate AI response with streaming
-      // TODO: Replace with actual agent-graph integration
-      const response = this.generateMockResponse(request.message);
-      const tokens = response.split(' ');
+      for await (const update of stream) {
+        const nodeName = Object.keys(update)[0];
+        if (!nodeName) continue;
 
-      for (const token of tokens) {
-        callbacks.onToken?.(token + ' ');
-        await this.delay(50); // Simulate streaming delay
+        callbacks.onNodeStart?.(nodeName);
+        const nodeState = update[nodeName];
+        if (nodeState?.generationResult?.draft) {
+          finalDraft = nodeState.generationResult.draft;
+        }
+        callbacks.onNodeEnd?.(nodeName);
       }
 
-      // Add assistant message to thread
+      // Emit the final draft as a token stream so the browser renders progressively.
+      const responseText = finalDraft || '(No content generated)';
+      const words = responseText.split(' ');
+      for (const word of words) {
+        callbacks.onToken?.(word + ' ');
+      }
+
       await threadService.addMessage(threadId, {
         role: 'assistant',
-        content: response,
+        content: responseText,
       });
 
       callbacks.onEnd?.();
@@ -75,10 +102,9 @@ class ChatService {
   }
 
   /**
-   * Send chat message (non-streaming)
+   * Send chat message (non-streaming).
    */
   async chat(request: ChatRequest): Promise<ChatResponse> {
-    // Get or create thread
     let threadId = request.threadId;
     if (!threadId) {
       const thread = await threadService.createThread({
@@ -88,18 +114,23 @@ class ChatService {
       threadId = thread.threadId;
     }
 
-    // Add user message
     await threadService.addMessage(threadId, {
       role: 'user',
       content: request.message,
       metadata: request.metadata,
     });
 
-    // Generate response
-    // TODO: Replace with actual agent-graph integration
-    const content = this.generateMockResponse(request.message);
+    const initialState = createInitialState(request.userId ?? 'anonymous', threadId);
+    const graphState = { ...initialState, userRequest: request.message };
 
-    // Add assistant message
+    const result = await this.getGraph().invoke(graphState, {
+      configurable: { thread_id: threadId },
+    });
+
+    const content: string = result.generationResult?.draft
+      || result.messages?.at(-1)?.content as string
+      || '(No content generated)';
+
     const message = await threadService.addMessage(threadId, {
       role: 'assistant',
       content,
@@ -112,29 +143,6 @@ class ChatService {
       createdAt: message.createdAt,
       metadata: message.metadata,
     };
-  }
-
-  /**
-   * Generate a mock AI response
-   * TODO: Replace with actual agent-graph integration
-   */
-  private generateMockResponse(userMessage: string): string {
-    const responses = [
-      "I'm a placeholder AI assistant. The actual agent-graph integration is coming soon!",
-      "Thanks for your message! I'll be much smarter once the agent-graph is connected.",
-      "I understand you're asking about: '" + userMessage.slice(0, 50) + "'. Full AI capabilities coming soon!",
-      "Great question! Once the BlogEngine agent system is integrated, I'll be able to help you with content generation, research, and more.",
-    ];
-
-    const index = Math.floor(Math.random() * responses.length);
-    return (responses[index] || responses[0]) as string;
-  }
-
-  /**
-   * Utility delay function
-   */
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
