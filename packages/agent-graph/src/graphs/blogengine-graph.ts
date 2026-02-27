@@ -58,6 +58,11 @@ function routeByNextAction(state: BlogEngineStateType): string {
     case 'respond_to_podcast':
       // OrchestratorNode sets this; MediaIngestionNode and ConversationContextNode
       // also emit it to continue the chain.
+      // NOTE: the catch-all `return 'podcastResponderNode'` assumes that any node
+      // other than orchestrator/media_ingestion with nextAction='respond_to_podcast'
+      // is the conversation_context node. If a node fails to set nextAction before
+      // returning, the graph will route to podcastResponderNode unexpectedly.
+      // Phase C: replace with per-node conditional edges for explicit routing.
       if (state.currentAgent === 'orchestrator') return 'mediaIngestionNode';
       if (state.currentAgent === 'media_ingestion') return 'conversationContextNode';
       return 'podcastResponderNode';

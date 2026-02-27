@@ -21,6 +21,8 @@ class ChatService {
   private graph: CompiledBlogEngineGraph | null = null;
 
   private getGraph(): CompiledBlogEngineGraph {
+    // Lazy singleton is safe: createBlogEngineGraph is synchronous and ChatService
+    // is a module-level singleton, so concurrent calls will share the same instance.
     if (!this.graph) {
       const config = getConfig();
       this.graph = createBlogEngineGraph({
@@ -128,7 +130,7 @@ class ChatService {
     });
 
     const content: string = result.generationResult?.draft
-      || result.messages?.at(-1)?.content as string
+      || extractContent(result.messages?.at(-1)?.content)
       || '(No content generated)';
 
     const message = await threadService.addMessage(threadId, {
@@ -144,6 +146,18 @@ class ChatService {
       metadata: message.metadata,
     };
   }
+}
+
+/** Safely extract plain text from a BaseMessage.content (string | MessageContent[]). */
+function extractContent(raw: unknown): string {
+  if (typeof raw === 'string') return raw;
+  if (Array.isArray(raw)) {
+    return (raw as Array<{ type?: string; text?: string }>)
+      .filter(c => c.type === 'text')
+      .map(c => c.text ?? '')
+      .join('');
+  }
+  return '';
 }
 
 // Export singleton instance

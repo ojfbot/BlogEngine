@@ -14,7 +14,7 @@
  */
 
 import { ChatAnthropic } from '@langchain/anthropic';
-import { HumanMessage } from '@langchain/core/messages';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import type { BlogEngineStateType } from '../state/schema.js';
 import type { NodeFactory } from './types.js';
 import { getLogger } from '../utils/logger.js';
@@ -85,7 +85,8 @@ export const createToneCheckerNode: NodeFactory = (options) => {
 
     try {
       const response = await model.invoke([
-        new HumanMessage(`${SYSTEM_PROMPT}\n\nDraft to assess:\n${draft}`),
+        new SystemMessage(SYSTEM_PROMPT),
+        new HumanMessage(`Draft to assess:\n${draft}`),
       ]);
       const raw = typeof response.content === 'string'
         ? response.content

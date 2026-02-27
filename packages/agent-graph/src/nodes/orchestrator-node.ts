@@ -2,7 +2,7 @@
  * OrchestratorNode — classifies intent, enforces tone retry hard cap.
  */
 import { ChatAnthropic } from '@langchain/anthropic';
-import { HumanMessage, AIMessage } from '@langchain/core/messages';
+import { SystemMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import type { BlogEngineStateType } from '../state/schema.js';
 import type { NextAction } from '../state/types.js';
 import type { NodeFactory } from './types.js';
@@ -44,9 +44,10 @@ export const createOrchestratorNode: NodeFactory = (options) => {
       || '';
 
     try {
-      const response = await model.invoke([new HumanMessage(`${SYSTEM_PROMPT}
-
-User request: ${userMessage}`)]);
+      const response = await model.invoke([
+        new SystemMessage(SYSTEM_PROMPT),
+        new HumanMessage(`User request: ${userMessage}`),
+      ]);
       const content = typeof response.content === 'string'
         ? response.content
         : (response.content as Array<{type:string;text?:string}>).map(c => c.type==='text'?c.text??'':'').join('');
