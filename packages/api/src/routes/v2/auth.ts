@@ -4,6 +4,11 @@
  * Issues a signed JWT for the given userId.
  * Phase B: no credential validation — token issuance only (for dev/testing).
  * Phase C: add real credential check before signing.
+ *
+ * ⚠️  SECURITY: This endpoint signs a JWT for ANY userId without verifying
+ * credentials. It MUST NOT be reachable from an external network until Phase C
+ * adds credential verification. Gate with a firewall rule or network policy
+ * before any production or staging deployment. See TECHDEBT TD-009.
  */
 
 import { Router, type IRouter } from 'express';

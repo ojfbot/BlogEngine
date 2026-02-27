@@ -8,7 +8,7 @@
  */
 
 import { ChatAnthropic } from '@langchain/anthropic';
-import { HumanMessage, AIMessage } from '@langchain/core/messages';
+import { SystemMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import type { BlogEngineStateType } from '../state/schema.js';
 import type { NodeFactory } from './types.js';
 import { getLogger } from '../utils/logger.js';
@@ -50,7 +50,8 @@ export const createSEOOptimizerNode: NodeFactory = (options) => {
 
     try {
       const response = await model.invoke([
-        new HumanMessage(`${SYSTEM_PROMPT}\n\nBlog post:\n${draft}`),
+        new SystemMessage(SYSTEM_PROMPT),
+        new HumanMessage(`Blog post:\n${draft}`),
       ]);
       const raw = typeof response.content === 'string'
         ? response.content

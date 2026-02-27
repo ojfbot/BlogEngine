@@ -8,7 +8,9 @@ import { logger } from './logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env.local file if it exists (repo root, 4 levels up from dist/utils/ or src/utils/)
+// Load .env.local from repo root.
+// Depth: packages/agent-core/src/utils/ (src) or packages/agent-core/dist/utils/ (dist) → 4 levels up.
+// If the package is relocated, update this count to match.
 dotenvConfig({ path: join(__dirname, '../../../../.env.local') });
 
 /**

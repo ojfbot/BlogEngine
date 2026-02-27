@@ -10,7 +10,7 @@
  */
 
 import { ChatAnthropic } from '@langchain/anthropic';
-import { HumanMessage, AIMessage } from '@langchain/core/messages';
+import { SystemMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import type { BlogEngineStateType } from '../state/schema.js';
 import type { NodeFactory } from './types.js';
 import { getLogger } from '../utils/logger.js';
@@ -59,8 +59,10 @@ export const createEditorNode: NodeFactory = (options) => {
         ? `Tone violations to fix:\n${violations.map((v, i) => `${i + 1}. ${v}`).join('\n')}`
         : 'General review: ensure the tone is collaborative and exploratory throughout.';
 
-      const prompt = `${SYSTEM_PROMPT}\n\n${violationList}\n\nDraft to revise:\n${draft}`;
-      const response = await model.invoke([new HumanMessage(prompt)]);
+      const response = await model.invoke([
+        new SystemMessage(SYSTEM_PROMPT),
+        new HumanMessage(`${violationList}\n\nDraft to revise:\n${draft}`),
+      ]);
       const revisedDraft = typeof response.content === 'string'
         ? response.content
         : (response.content as Array<{type:string;text?:string}>).map(c => c.type==='text'?c.text??'':'').join('');

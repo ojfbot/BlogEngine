@@ -14,7 +14,7 @@
  */
 
 import { ChatAnthropic } from '@langchain/anthropic';
-import { HumanMessage, AIMessage } from '@langchain/core/messages';
+import { SystemMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import type { BlogEngineStateType } from '../state/schema.js';
 import type { NodeFactory } from './types.js';
 import { getLogger } from '../utils/logger.js';
@@ -49,8 +49,10 @@ export const createPodcastResponderNode: NodeFactory = (options) => {
     const userThoughts = state.contentContext?.userThoughts ?? state.userRequest ?? '';
 
     try {
-      const prompt = `${SYSTEM_PROMPT}\n\n${userThoughts ? `Your angle: ${userThoughts}\n\n` : ''}Source material:\n${transcript || '(no transcript provided)'}`;
-      const response = await model.invoke([new HumanMessage(prompt)]);
+      const response = await model.invoke([
+        new SystemMessage(SYSTEM_PROMPT),
+        new HumanMessage(`${userThoughts ? `Your angle: ${userThoughts}\n\n` : ''}Source material:\n${transcript || '(no transcript provided)'}`),
+      ]);
       const draft = typeof response.content === 'string'
         ? response.content
         : (response.content as Array<{type:string;text?:string}>).map(c => c.type==='text'?c.text??'':'').join('');

@@ -8,7 +8,7 @@
  */
 
 import { ChatAnthropic } from '@langchain/anthropic';
-import { HumanMessage, AIMessage } from '@langchain/core/messages';
+import { SystemMessage, HumanMessage, AIMessage } from '@langchain/core/messages';
 import type { BlogEngineStateType } from '../state/schema.js';
 import type { NodeFactory } from './types.js';
 import { getLogger } from '../utils/logger.js';
@@ -41,11 +41,14 @@ export const createArticleGeneratorNode: NodeFactory = (options) => {
     const context = state.contentContext?.transcript ?? '';
 
     try {
-      const prompt = context
-        ? `${SYSTEM_PROMPT}\n\nUser request: ${userRequest}\n\nAdditional context:\n${context}`
-        : `${SYSTEM_PROMPT}\n\nUser request: ${userRequest}`;
+      const humanContent = context
+        ? `User request: ${userRequest}\n\nAdditional context:\n${context}`
+        : `User request: ${userRequest}`;
 
-      const response = await model.invoke([new HumanMessage(prompt)]);
+      const response = await model.invoke([
+        new SystemMessage(SYSTEM_PROMPT),
+        new HumanMessage(humanContent),
+      ]);
       const draft = typeof response.content === 'string'
         ? response.content
         : (response.content as Array<{type:string;text?:string}>).map(c => c.type==='text'?c.text??'':'').join('');
