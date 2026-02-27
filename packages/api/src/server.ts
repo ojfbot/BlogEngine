@@ -7,6 +7,7 @@ import threadsRouter from './routes/v2/threads.js';
 import chatRouter from './routes/v2/chat.js';
 import authRouter from './routes/v2/auth.js';
 import postsRouter from './routes/v2/posts.js';
+import toolsRouter from './routes/tools.js';
 import { requireAuth } from './middleware/auth.js';
 import { RATE_LIMIT, SERVER } from './constants.js';
 
@@ -64,6 +65,9 @@ app.use((req, _res, next) => {
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Capability manifest — no auth, no rate limiting (static JSON)
+app.use('/api/tools', toolsRouter);
 
 // Auth endpoint — no JWT required to issue a token
 app.use('/api/v2/auth', generalLimiter, authRouter);
