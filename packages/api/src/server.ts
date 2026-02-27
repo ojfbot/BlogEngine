@@ -74,7 +74,9 @@ app.use('/api/v2/chat', chatLimiter, requireAuth, chatRouter);
 
 // Posts endpoint — called by BlogEngineDomainAgent.fetchPosts() in frame-agent.
 // Mounted at /api/posts (not /api/v2/posts) to match frame-agent's hardcoded path.
-app.use('/api/posts', generalLimiter, postsRouter);
+// requireAuth: frame-agent must send a Bearer token. Use mockAuth=true locally until
+// frame-agent is updated to pass its service JWT (Phase C — see TECHDEBT TD-016).
+app.use('/api/posts', generalLimiter, requireAuth, postsRouter);
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {

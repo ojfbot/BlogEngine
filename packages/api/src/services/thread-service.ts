@@ -132,9 +132,12 @@ class ThreadService {
       createdAt: new Date().toISOString(),
     };
 
-    thread.messages.push(newMessage);
-    thread.updatedAt = newMessage.createdAt;
-    this.threads.set(threadId, thread);
+    const updatedThread: ThreadWithMessages = {
+      ...thread,
+      messages: [...thread.messages, newMessage],
+      updatedAt: newMessage.createdAt,
+    };
+    this.threads.set(threadId, updatedThread);
     this.persist();
     return newMessage;
   }

@@ -21,7 +21,7 @@ import { getLogger } from '../utils/logger.js';
 
 const logger = getLogger('tone-checker-node');
 
-const TONE_RETRY_CAP = 2;
+export const TONE_RETRY_CAP = 2;
 
 const SYSTEM_PROMPT = `You are a tone auditor for a collaborative blog. Assess whether the draft maintains a "yes, and..." collaborative, exploratory tone.
 
@@ -91,11 +91,14 @@ export const createToneCheckerNode: NodeFactory = (options) => {
         ? response.content
         : (response.content as Array<{type:string;text?:string}>).map(c => c.type==='text'?c.text??'':'').join('');
 
-      let assessment: { passed: boolean; violations: string[] } = { passed: true, violations: [] };
+      let assessment: { passed: boolean; violations: string[] } = {
+        passed: false,
+        violations: ['tone check failed: could not parse LLM response'],
+      };
       try {
         assessment = JSON.parse(raw);
       } catch {
-        logger.warn({ raw }, 'ToneCheckerNode: failed to parse JSON — defaulting to pass');
+        logger.warn({ raw }, 'ToneCheckerNode: failed to parse JSON — defaulting to fail');
       }
 
       if (assessment.passed) {
@@ -132,4 +135,3 @@ export const createToneCheckerNode: NodeFactory = (options) => {
   };
 };
 
-export { TONE_RETRY_CAP };

@@ -8,8 +8,8 @@ import { logger } from './logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env.local file if it exists
-dotenvConfig({ path: join(__dirname, '../../../.env.local') });
+// Load .env.local file if it exists (repo root, 4 levels up from dist/utils/ or src/utils/)
+dotenvConfig({ path: join(__dirname, '../../../../.env.local') });
 
 /**
  * Directory configuration schema
@@ -115,7 +115,7 @@ class Config {
     }
 
     // Try to load from env.json first (highest priority)
-    const envJsonPath = join(__dirname, '../../../env.json');
+    const envJsonPath = join(__dirname, '../../env.json');
 
     if (existsSync(envJsonPath)) {
       try {
