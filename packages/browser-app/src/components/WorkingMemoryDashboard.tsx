@@ -16,6 +16,7 @@ import {
   Tag,
   OverflowMenu,
   OverflowMenuItem,
+  InlineNotification,
 } from '@carbon/react';
 import { Add, TrashCan, Edit, BookmarkAdd } from '@carbon/icons-react';
 import './DashboardSection.css';
@@ -43,8 +44,11 @@ function WorkingMemoryDashboard() {
   const [items, setItems] = useState<WorkingMemoryItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<WorkingMemoryItem | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -62,16 +66,24 @@ function WorkingMemoryDashboard() {
     if (stored) {
       try {
         setItems(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse working memory items:', e);
+      } catch {
+        setStorageError('Working memory data appears corrupted — starting fresh.');
       }
     }
   }, []);
 
-  // Save items to localStorage
+  // Save items to localStorage — catches QuotaExceededError
   const saveItems = (newItems: WorkingMemoryItem[]) => {
     setItems(newItems);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newItems));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newItems));
+      setStorageError(null);
+    } catch (e) {
+      const msg = e instanceof Error && e.name === 'QuotaExceededError'
+        ? 'Storage quota exceeded — some items may not be saved. Remove older items to free space.'
+        : 'Failed to save to local storage.';
+      setStorageError(msg);
+    }
   };
 
   const handleAddItem = () => {
@@ -122,13 +134,19 @@ function WorkingMemoryDashboard() {
   };
 
   const handleDeleteItem = (id: string) => {
-    if (confirm('Delete this item from working memory?')) {
-      saveItems(items.filter(item => item.id !== id));
-      if (selectedItem?.id === id) {
-        setIsViewModalOpen(false);
-        setSelectedItem(null);
-      }
+    setPendingDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!pendingDeleteId) return;
+    saveItems(items.filter(item => item.id !== pendingDeleteId));
+    if (selectedItem?.id === pendingDeleteId) {
+      setIsViewModalOpen(false);
+      setSelectedItem(null);
     }
+    setPendingDeleteId(null);
+    setIsDeleteModalOpen(false);
   };
 
   const handleViewItem = (item: WorkingMemoryItem) => {
@@ -195,8 +213,8 @@ function WorkingMemoryDashboard() {
     id: item.id,
     title: item.title,
     type: <Tag type={getTypeColor(item.type)} size="sm">{item.type}</Tag>,
-    tags: item.metadata?.tags?.slice(0, 3).map((tag, i) => (
-      <Tag key={i} type="outline" size="sm" style={{ marginRight: '0.25rem' }}>{tag}</Tag>
+    tags: item.metadata?.tags?.slice(0, 3).map((tag) => (
+      <Tag key={tag} type="outline" size="sm" style={{ marginRight: '0.25rem' }}>{tag}</Tag>
     )) || '—',
     created: new Date(item.createdAt).toLocaleDateString(),
     actions: (
@@ -231,6 +249,17 @@ function WorkingMemoryDashboard() {
           Add Item
         </Button>
       </div>
+
+      {storageError && (
+        <InlineNotification
+          kind="error"
+          title="Storage error"
+          subtitle={storageError}
+          onClose={() => setStorageError(null)}
+          lowContrast
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
 
       {items.length === 0 ? (
         <div className="empty-state">
@@ -336,6 +365,23 @@ function WorkingMemoryDashboard() {
             required
           />
         </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={isDeleteModalOpen}
+        danger
+        modalHeading="Delete item?"
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
+        onRequestClose={() => {
+          setPendingDeleteId(null);
+          setIsDeleteModalOpen(false);
+        }}
+        onRequestSubmit={confirmDelete}
+        size="sm"
+      >
+        <p>This action cannot be undone.</p>
       </Modal>
 
       {/* View/Edit Modal */}

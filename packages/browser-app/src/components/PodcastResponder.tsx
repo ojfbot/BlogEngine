@@ -19,6 +19,7 @@ interface MediaSource {
 }
 
 interface Message {
+  id: string;
   role: 'user' | 'assistant';
   content: string;
 }
@@ -45,6 +46,7 @@ function PodcastResponder() {
     // Move to chat step with initial assistant message
     setConversation([
       {
+        id: crypto.randomUUID(),
         role: 'assistant',
         content: `Great! Let's discuss "${mediaSource.title}". You mentioned: "${mediaSource.notes}". What aspect resonated with you the most, or what thoughts did it spark?`,
       },
@@ -55,12 +57,13 @@ function PodcastResponder() {
   const handleSendMessage = () => {
     if (!currentMessage.trim()) return;
 
-    const userMessage: Message = { role: 'user', content: currentMessage };
+    const userMessage: Message = { id: crypto.randomUUID(), role: 'user', content: currentMessage };
     const updatedConversation = [...conversation, userMessage];
 
     // Generate a collaborative response
+    // TODO: replace with POST /api/v2/chat (respond_to_podcast intent) — Phase C (TECHDEBT TD-013)
     const response = generateCollaborativeResponse(currentMessage, mediaSource);
-    const assistantMessage: Message = { role: 'assistant', content: response };
+    const assistantMessage: Message = { id: crypto.randomUUID(), role: 'assistant', content: response };
 
     setConversation([...updatedConversation, assistantMessage]);
     setCurrentMessage('');
@@ -212,8 +215,8 @@ This is less about having the final word and more about continuing the conversat
           </Tile>
 
           <div className="conversation-messages">
-            {conversation.map((msg, idx) => (
-              <div key={idx} className={`message message-${msg.role}`}>
+            {conversation.map((msg) => (
+              <div key={msg.id} className={`message message-${msg.role}`}>
                 <div className="message-content">{msg.content}</div>
               </div>
             ))}
@@ -268,8 +271,10 @@ This is less about having the final word and more about continuing the conversat
             <pre className="markdown-preview">{generatedPost}</pre>
           </Tile>
           <div className="preview-actions">
-            <Button kind="primary" size="sm">Copy to Clipboard</Button>
-            <Button kind="secondary" size="sm">Save to Library</Button>
+            {/* TODO: wire to Clipboard API — Phase C */}
+            <Button kind="primary" size="sm" disabled title="Coming soon">Copy to Clipboard</Button>
+            {/* TODO: wire to POST /api/v2/working-memory or library service — Phase C */}
+            <Button kind="secondary" size="sm" disabled title="Coming soon">Save to Library</Button>
             <Button kind="tertiary" size="sm" onClick={() => setStep('chat')}>
               Back to Chat
             </Button>

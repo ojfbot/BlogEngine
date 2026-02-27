@@ -20,7 +20,7 @@ vi.mock('@langchain/anthropic', () => ({
 }));
 
 import { createBlogEngineGraph } from '../graphs/blogengine-graph.js';
-import { BlogEngineState, createInitialState } from '../state/schema.js';
+import { createInitialState } from '../state/schema.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -178,19 +178,15 @@ describe('BlogEngine graph', () => {
 
 describe('BlogEngineState reducers', () => {
   it('messages reducer concatenates, not replaces', () => {
-    // Directly test the reducer behaviour via the Annotation
-    const { messagesReducer } = BlogEngineState.spec.messages as any;
-    if (!messagesReducer) {
-      // If not directly accessible, test via createInitialState + schema
-      const state1 = createInitialState('u', 't');
-      const state2 = { ...state1, messages: [new HumanMessage('hello')] };
-      const state3 = { ...state2, messages: [new HumanMessage('world')] };
-      // LangGraph applies reducers during graph execution; here we just validate shape
-      expect(Array.isArray(state1.messages)).toBe(true);
-      expect(state1.messages?.length).toBe(0);
-      expect(state2.messages?.length).toBe(1);
-      expect(state3.messages?.length).toBe(1);
-    }
+    // Reducer accumulation is covered by the graph.invoke integration tests above.
+    // Here we validate the initial shape and that the field is an array.
+    const state1 = createInitialState('u', 't');
+    const state2 = { ...state1, messages: [new HumanMessage('hello')] };
+    const state3 = { ...state2, messages: [new HumanMessage('world')] };
+    expect(Array.isArray(state1.messages)).toBe(true);
+    expect(state1.messages?.length).toBe(0);
+    expect(state2.messages?.length).toBe(1);
+    expect(state3.messages?.length).toBe(1);
   });
 
   it('nodeExecutionOrder reducer accumulates across multiple node returns', () => {
