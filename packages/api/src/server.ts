@@ -66,8 +66,8 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Capability manifest — no auth, no rate limiting (static JSON)
-app.use('/api/tools', toolsRouter);
+// Capability manifest — rate-limited, no auth required
+app.use('/api/tools', generalLimiter, toolsRouter);
 
 // Auth endpoint — no JWT required to issue a token
 app.use('/api/v2/auth', generalLimiter, authRouter);
