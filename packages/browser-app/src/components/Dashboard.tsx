@@ -21,6 +21,9 @@ import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
 import CondensedChat from './CondensedChat';
 import ThreadSidebar from './ThreadSidebar';
+// MF isolation: Dashboard may be loaded as a Module Federation remote under the shell's
+// Provider (which has no BlogEngine slices). Import and wrap with the local store so
+// DashboardContent always resolves against the correct Redux context.
 import { store } from '../store';
 import './Dashboard.css';
 
