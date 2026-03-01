@@ -66,4 +66,5 @@ domain-knowledge/
 .claude/commands/
 decisions/core/
 personal-knowledge/
-.claude/settings.json  # see also .claude/settings.local.json above
+# see also .claude/settings.local.json (above)
+.claude/settings.json
