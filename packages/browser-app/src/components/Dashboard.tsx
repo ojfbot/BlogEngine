@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Provider } from 'react-redux';
 import {
   Tabs,
   TabList,
@@ -20,9 +21,10 @@ import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
 import CondensedChat from './CondensedChat';
 import ThreadSidebar from './ThreadSidebar';
+import { store } from '../store';
 import './Dashboard.css';
 
-function Dashboard() {
+function DashboardContent() {
   const dispatch = useAppDispatch();
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
@@ -117,6 +119,14 @@ function Dashboard() {
         <CondensedChat sidebarExpanded={showThreadSidebar && sidebarExpanded} />
       )}
     </>
+  );
+}
+
+function Dashboard() {
+  return (
+    <Provider store={store}>
+      <DashboardContent />
+    </Provider>
   );
 }
 
