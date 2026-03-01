@@ -23,6 +23,7 @@ export default defineConfig({
         // SCAFFOLD: Dashboard is the single entry point the shell loads.
         // Do not expose internal components — shell only needs the top-level view.
         './Dashboard': './src/components/Dashboard',
+        './Settings':  './src/components/settings/SettingsPanel',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.3.1' },
