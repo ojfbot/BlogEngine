@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react'
-import { Button } from '@carbon/react'
+import { Button, ButtonSet } from '@carbon/react'
 import { SettingsForm, loadSettings, saveSettings } from '../SettingsDashboard.js'
 import type { SettingsFormData } from '../SettingsDashboard.js'
 
@@ -21,8 +21,13 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [settings, setSettings] = useState<SettingsFormData>(loadSettings)
 
   function handleSave() {
-    saveSettings(settings)
-    onClose()
+    try {
+      saveSettings(settings)
+      onClose()
+    } catch (err) {
+      // localStorage may throw SecurityError (sandboxed iframe) or QuotaExceededError
+      console.error('Failed to save settings:', err)
+    }
   }
 
   function handleCancel() {
@@ -33,10 +38,10 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
   return (
     <div>
       <SettingsForm settings={settings} onChange={setSettings} />
-      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+      <ButtonSet style={{ justifyContent: 'flex-end', marginTop: '1rem' }}>
         <Button kind="ghost" onClick={handleCancel}>Cancel</Button>
         <Button kind="primary" onClick={handleSave}>Save</Button>
-      </div>
+      </ButtonSet>
     </div>
   )
 }
