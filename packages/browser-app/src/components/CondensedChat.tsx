@@ -127,7 +127,7 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
       data-element="chat-window"
       data-state={displayState}
       style={{
-        right: sidebarExpanded ? 'calc(320px + 1rem)' : '72px',
+        right: sidebarExpanded ? 'calc(320px + 2rem)' : '72px',
       }}
     >
       <div

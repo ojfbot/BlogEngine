@@ -27,7 +27,13 @@ import ThreadSidebar from './ThreadSidebar';
 import { store } from '../store';
 import './Dashboard.css';
 
-function DashboardContent() {
+interface DashboardProps {
+  /** True when mounted inside the Frame shell host. Suppresses standalone-mode
+   *  margins and activates the flex height chain so content fills the shell frame. */
+  shellMode?: boolean;
+}
+
+function DashboardContent({ shellMode }: DashboardProps) {
   const dispatch = useAppDispatch();
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
@@ -64,7 +70,11 @@ function DashboardContent() {
       )}
 
       <div
-        className={`dashboard-wrapper ${showThreadSidebar && sidebarExpanded ? 'with-sidebar' : ''}`}
+        className={[
+          'dashboard-wrapper',
+          showThreadSidebar && sidebarExpanded ? 'with-sidebar' : '',
+          shellMode ? 'shell-mode' : '',
+        ].filter(Boolean).join(' ')}
         data-element="app-container"
       >
         <div className="dashboard-header">
@@ -125,12 +135,13 @@ function DashboardContent() {
   );
 }
 
-// Wraps with local store for MF isolation. Harmless no-op in standalone mode
-// because App.tsx already provides the same store singleton.
-function Dashboard() {
+// Self-contained export for Module Federation. Carries its own store so Redux
+// slices always resolve correctly regardless of which Provider is above.
+// In standalone mode App.tsx wraps with the same store singleton — harmless double-wrap.
+function Dashboard({ shellMode }: DashboardProps = {}) {
   return (
     <Provider store={store}>
-      <DashboardContent />
+      <DashboardContent shellMode={shellMode} />
     </Provider>
   );
 }
