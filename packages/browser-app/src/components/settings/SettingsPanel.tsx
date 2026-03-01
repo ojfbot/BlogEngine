@@ -14,7 +14,7 @@ import { SettingsForm, loadSettings, saveSettings } from '../SettingsDashboard.j
 import type { SettingsFormData } from '../SettingsDashboard.js'
 
 interface SettingsPanelProps {
-  onClose?: () => void
+  onClose: () => void
 }
 
 export default function SettingsPanel({ onClose }: SettingsPanelProps) {
@@ -22,11 +22,12 @@ export default function SettingsPanel({ onClose }: SettingsPanelProps) {
 
   function handleSave() {
     saveSettings(settings)
-    onClose?.()
+    onClose()
   }
 
   function handleCancel() {
-    onClose?.()
+    setSettings(loadSettings()) // reset dirty state before the shell closes/hides the panel
+    onClose()
   }
 
   return (
