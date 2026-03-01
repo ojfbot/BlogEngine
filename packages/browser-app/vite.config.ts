@@ -20,10 +20,11 @@ export default defineConfig({
       name: 'blogengine',
       filename: 'remoteEntry.js',
       exposes: {
-        // SCAFFOLD: Dashboard is the single entry point the shell loads.
-        // Do not expose internal components — shell only needs the top-level view.
+        // Approved MF surface area for the shell. Do not expose internal components.
+        // Dashboard: primary content view loaded by the shell host.
+        // Settings: bare settings panel; shell provides the <Modal> chrome.
         './Dashboard': './src/components/Dashboard',
-        './Settings':  './src/components/settings/SettingsPanel',
+        './Settings': './src/components/settings/SettingsPanel',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.3.1' },
