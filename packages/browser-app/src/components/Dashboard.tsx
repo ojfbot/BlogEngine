@@ -125,6 +125,8 @@ function DashboardContent() {
   );
 }
 
+// Wraps with local store for MF isolation. Harmless no-op in standalone mode
+// because App.tsx already provides the same store singleton.
 function Dashboard() {
   return (
     <Provider store={store}>
