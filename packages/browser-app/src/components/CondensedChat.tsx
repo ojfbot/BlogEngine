@@ -123,12 +123,9 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
 
   return (
     <div
-      className={`condensed-chat ${isExpanded ? 'expanded' : ''} ${isMinimized ? 'minimized' : ''}`}
+      className={`condensed-chat ${isExpanded ? 'expanded' : ''} ${isMinimized ? 'minimized' : ''} ${sidebarExpanded ? 'with-sidebar' : ''}`}
       data-element="chat-window"
       data-state={displayState}
-      style={{
-        right: sidebarExpanded ? 'calc(320px + 2rem)' : '72px',
-      }}
     >
       <div
         className="condensed-header"
