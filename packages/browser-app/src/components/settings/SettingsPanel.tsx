@@ -1,23 +1,18 @@
 /**
  * BlogEngine SettingsPanel — exposed via MF './Settings' to the shell.
  *
- * Shell provides the <Modal> chrome. This component owns form fields and
- * persistence across two stores:
+ * Two-store architecture:
+ *   Shell Redux: apiBaseUrl, notionApiUrl, defaultAuthor, autoPublish, autoSave,
+ *                seoSuggestions — non-sensitive, persisted by shell.
+ *   localStorage: anthropicApiKey, openaiApiKey, notionApiKey — sensitive keys,
+ *                 explicit Save button, never in Redux.
  *
- *   Shell Redux (shared singleton via MF):
- *     apiBaseUrl, notionApiUrl, defaultAuthor, autoPublish, autoSave,
- *     seoSuggestions — non-sensitive preferences and connection config.
- *     Persisted by the shell's localStorage adapter in store/index.ts.
- *
- *   localStorage (this app's own keys):
- *     anthropicApiKey, openaiApiKey, notionApiKey — sensitive credentials.
- *     Never sent to Redux. Managed entirely within this panel.
- *
- * Dispatch pattern: sub-apps can't import from the shell (circular MF dep).
- * Use action type string — valid Redux, store is shared via MF singleton.
+ * Connection status: probes GET /health on the BlogEngine API server.
+ * Health URL is derived from the effective base URL (strips /api/v2 suffix
+ * via URL constructor origin resolution).
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   TextInput,
@@ -25,8 +20,10 @@ import {
   Button,
   ButtonSet,
   FormGroup,
-  InlineNotification,
+  InlineLoading,
+  Tag,
 } from '@carbon/react'
+import { Renew } from '@carbon/icons-react'
 import { STORAGE_KEYS } from '../../constants.js'
 
 const ACTION_TYPE = 'settings/updateBlogEngineSettings'
@@ -58,7 +55,7 @@ const BLOG_DEFAULTS: BlogSettings = {
   seoSuggestions: true,
 }
 
-// ── localStorage key helpers ──────────────────────────────────────────────────
+// ── localStorage helpers ──────────────────────────────────────────────────────
 
 function loadLocalKeys(): LocalKeys {
   return {
@@ -74,19 +71,45 @@ function saveLocalKeys(keys: LocalKeys): void {
   localStorage.setItem(STORAGE_KEYS.NOTION_API_KEY,    keys.notionApiKey)
 }
 
+// ── Connection status hook ────────────────────────────────────────────────────
+
+type ConnStatus = 'idle' | 'checking' | 'connected' | 'unreachable'
+
+function useConnectionStatus(apiBaseUrl: string) {
+  const [status, setStatus] = useState<ConnStatus>('idle')
+
+  const check = useCallback(async () => {
+    setStatus('checking')
+    try {
+      // Resolve /health from the base URL origin (strips /api/v2 path prefix)
+      const healthUrl = new URL('/health', apiBaseUrl || DEFAULT_API_BASE_URL).href
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 4000)
+      const res = await fetch(healthUrl, { signal: controller.signal })
+      clearTimeout(timer)
+      setStatus(res.ok ? 'connected' : 'unreachable')
+    } catch {
+      setStatus('unreachable')
+    }
+  }, [apiBaseUrl])
+
+  useEffect(() => { check() }, [check])
+
+  return { status, recheck: check }
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => void }) {
   const dispatch = useDispatch()
 
-  // Non-sensitive settings from shell Redux
   const stored =
     useSelector((s: any) => s?.settings?.apps?.['blogengine'] as BlogSettings | undefined) ?? BLOG_DEFAULTS
 
-  // API URL — save on blur
-  const [apiBaseUrl, setApiBaseUrl] = useState(stored.apiBaseUrl)
+  const effectiveUrl = stored.apiBaseUrl || DEFAULT_API_BASE_URL
+  const { status, recheck } = useConnectionStatus(stored.apiBaseUrl)
 
-  // Sensitive keys from localStorage (never in Redux)
+  const [apiBaseUrl, setApiBaseUrl] = useState(stored.apiBaseUrl)
   const [localKeys, setLocalKeys] = useState<LocalKeys>(loadLocalKeys)
   const [keysSaved, setKeysSaved] = useState(false)
 
@@ -124,6 +147,21 @@ export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => v
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiBaseUrl(e.target.value)}
           onBlur={handleApiUrlBlur}
         />
+
+        <div className="settings-connection-row">
+          <ConnectionIndicator status={status} url={effectiveUrl} />
+          <Button
+            kind="ghost"
+            size="sm"
+            renderIcon={Renew}
+            iconDescription="Re-check"
+            hasIconOnly
+            onClick={recheck}
+            disabled={status === 'checking'}
+            className="settings-recheck-btn"
+          />
+        </div>
+
         <TextInput
           id="blog-notion-api-url"
           labelText="Notion integration URL"
@@ -136,16 +174,11 @@ export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => v
         />
       </FormGroup>
 
-      {/* ── API Keys (localStorage only — never Redux) ────────────────────── */}
+      {/* ── API Keys (localStorage only) ─────────────────────────────────── */}
       <FormGroup legendText="API Keys" className="settings-form-group">
-        <InlineNotification
-          kind="info"
-          title="Dev-mode only"
-          subtitle="Keys are stored in browser localStorage and never sent to Redux or a server."
-          lowContrast
-          hideCloseButton
-          className="settings-info-banner"
-        />
+        <p className="settings-info-text">
+          Stored in browser localStorage only — never sent to Redux or a server. Dev-mode only.
+        </p>
         <TextInput
           id="blog-anthropic-key"
           labelText="Anthropic API Key"
@@ -219,4 +252,35 @@ export default function SettingsPanel({ onClose: _onClose }: { onClose?: () => v
       </FormGroup>
     </div>
   )
+}
+
+// ── Status indicator ──────────────────────────────────────────────────────────
+
+function ConnectionIndicator({ status, url }: { status: ConnStatus; url: string }) {
+  if (status === 'checking') {
+    return (
+      <InlineLoading
+        description="Checking connection…"
+        status="active"
+        className="settings-conn-loading"
+      />
+    )
+  }
+  if (status === 'connected') {
+    return (
+      <span className="settings-conn-status">
+        <Tag type="green" size="sm">Connected</Tag>
+        <span className="settings-conn-url">{url}</span>
+      </span>
+    )
+  }
+  if (status === 'unreachable') {
+    return (
+      <span className="settings-conn-status">
+        <Tag type="red" size="sm">Unreachable</Tag>
+        <span className="settings-conn-url">{url}</span>
+      </span>
+    )
+  }
+  return null
 }
