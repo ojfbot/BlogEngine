@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @blogengine/browser-app build",
+  "buildCommand": "pnpm --filter @blogengine/agent-core build && pnpm --filter @blogengine/browser-app build",
   "outputDirectory": "packages/browser-app/dist",
   "installCommand": "pnpm install",
   "rewrites": [
