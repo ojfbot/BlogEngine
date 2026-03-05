@@ -7,6 +7,7 @@ import threadsRouter from './routes/v2/threads.js';
 import chatRouter from './routes/v2/chat.js';
 import authRouter from './routes/v2/auth.js';
 import postsRouter from './routes/v2/posts.js';
+import toolEndpointsRouter from './routes/v2/tool-endpoints.js';
 import toolsRouter from './routes/tools.js';
 import { requireAuth } from './middleware/auth.js';
 import { RATE_LIMIT, SERVER } from './constants.js';
@@ -75,6 +76,9 @@ app.use('/api/v2/auth', generalLimiter, authRouter);
 // V2 API routes — JWT required
 app.use('/api/v2/threads', generalLimiter, requireAuth, threadsRouter);
 app.use('/api/v2/chat', chatLimiter, requireAuth, chatRouter);
+// Tool endpoints (ADR-0007) — distinct routes per tool, all via chatService.
+// Mounted after /api/v2/chat so the specific prefix wins over the broad /api/v2 match.
+app.use('/api/v2', chatLimiter, requireAuth, toolEndpointsRouter);
 
 // Posts endpoint — called by BlogEngineDomainAgent.fetchPosts() in frame-agent.
 // Mounted at /api/posts (not /api/v2/posts) to match frame-agent's hardcoded path.

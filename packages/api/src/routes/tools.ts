@@ -31,12 +31,7 @@ export interface CapabilityManifest {
   service: string;
   version: string;
   description: string;
-  /**
-   * All tools currently dispatch to POST /api/v2/chat. The orchestrator routes
-   * by intent inferred from `message`. The tool `name` is the implicit
-   * discriminator — frame-agent should include it in the message so that
-   * conversation history is attributable to a specific tool invocation.
-   */
+  /** Each tool has a distinct endpoint (ADR-0007). All delegate to chatService internally. */
   tools: ToolEntry[];
   /**
    * Data endpoints — read-only resource access.
@@ -58,7 +53,7 @@ export const capabilityManifest: CapabilityManifest = {
   tools: [
     {
       name: 'draft_post',
-      endpoint: 'POST /api/v2/chat',
+      endpoint: 'POST /api/v2/draft',
       auth: 'Bearer',
       description: 'Draft a new blog post from a topic or outline',
       input: {
@@ -72,7 +67,7 @@ export const capabilityManifest: CapabilityManifest = {
     },
     {
       name: 'edit_post',
-      endpoint: 'POST /api/v2/chat',
+      endpoint: 'POST /api/v2/posts/edit',
       auth: 'Bearer',
       description: 'Edit and improve an existing draft',
       input: {
@@ -86,7 +81,7 @@ export const capabilityManifest: CapabilityManifest = {
     },
     {
       name: 'publish_post',
-      endpoint: 'POST /api/v2/chat',
+      endpoint: 'POST /api/v2/posts/publish',
       auth: 'Bearer',
       description: 'Move a draft through the publishing pipeline',
       input: {
@@ -100,7 +95,7 @@ export const capabilityManifest: CapabilityManifest = {
     },
     {
       name: 'notion_sync',
-      endpoint: 'POST /api/v2/chat',
+      endpoint: 'POST /api/v2/notion/sync',
       auth: 'Bearer',
       description: 'Sync content with Notion workspace',
       input: {
@@ -114,7 +109,7 @@ export const capabilityManifest: CapabilityManifest = {
     },
     {
       name: 'podcast_notes',
-      endpoint: 'POST /api/v2/chat',
+      endpoint: 'POST /api/v2/podcast/notes',
       auth: 'Bearer',
       description: 'Generate show notes and episode summary for a podcast episode',
       input: {
@@ -128,7 +123,7 @@ export const capabilityManifest: CapabilityManifest = {
     },
     {
       name: 'content_strategy',
-      endpoint: 'POST /api/v2/chat',
+      endpoint: 'POST /api/v2/content/strategy',
       auth: 'Bearer',
       description: 'Generate topic ideas and editorial calendar',
       input: {
