@@ -196,7 +196,7 @@ MIT
 
 ## Related Projects
 
-- [CV Builder](https://github.com/ojfbot/cv-builder) - AI-powered resume builder (sibling project)
+- [Resume Builder](https://github.com/ojfbot/cv-builder) - AI-powered resume builder (sibling project)
 
 ---
 
