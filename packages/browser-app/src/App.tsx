@@ -27,7 +27,7 @@ function App() {
   // Mock applications for demo
   const applications = [
     'BlogEngine',
-    'CV Builder',
+    'Resume Builder',
     'TripPlanner',
     'Project Manager',
     'Analytics Dashboard',
@@ -36,7 +36,7 @@ function App() {
   // Port mapping for app navigation
   const appPorts: Record<string, number> = {
     'BlogEngine': 3005,
-    'CV Builder': 3000,
+    'Resume Builder': 3000,
     'TripPlanner': 3010,
   };
 
