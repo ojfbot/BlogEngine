@@ -41,6 +41,7 @@ blogengine/
 - **Package Manager**: pnpm 9.15+
 - **Monorepo**: Lerna + pnpm workspaces
 - **Styling**: Sass (SCSS)
+- **Component Development**: Storybook ~8.4.0
 
 ## Getting Started
 
@@ -151,6 +152,7 @@ public-hoist-pattern[]=@ibm/*
 - `pnpm dev` - Start development server
 - `pnpm build` - Build all packages
 - `pnpm type-check` - Run TypeScript type checking
+- `pnpm storybook:build` - Build Storybook (also used as CI gate)
 - `./scripts/security-verify.sh` - Run security audit
 
 ### Browser App Scripts
@@ -159,15 +161,17 @@ public-hoist-pattern[]=@ibm/*
 - `pnpm build` - Build for production (TypeScript + Vite)
 - `pnpm preview` - Preview production build
 - `pnpm type-check` - Type check without emitting
-
+- `pnpm storybook` - Start Storybook dev server
+- `pnpm storybook:build` - Build Storybook for CI validation
 ## Contributing
 
 1. Create a feature branch from `main`
 2. Make your changes
 3. Run `pnpm type-check` to ensure no type errors
-4. Run `./scripts/security-verify.sh` to check security
-5. Commit with clear, descriptive messages
-6. Push and create a pull request
+4. Run `pnpm storybook:build` to ensure Storybook builds cleanly (CI will block merge if it doesn't)
+5. Run `./scripts/security-verify.sh` to check security
+6. Commit with clear, descriptive messages
+7. Push and create a pull request
 
 ### Commit Conventions
 
