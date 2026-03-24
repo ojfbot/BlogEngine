@@ -8,7 +8,7 @@ BlogEngine is an intelligent blogging platform that helps content creators manag
 
 - **Multi-Context Management**: Work on multiple blog posts, drafts, and content pieces simultaneously
 - **AI-Powered Writing**: Built-in AI assistant for content generation, editing, and brainstorming
-- **Persistent Chat**: Condensed chat interface that follows you across tabs
+- **Persistent Chat**: Condensed chat interface that follows you across tabs (via `@ojfbot/frame-ui-components`)
 - **Interactive Workspace**: Dedicated interactive tab for focused AI collaboration
 - **Badge Actions**: Quick action buttons for common content creation tasks
 - **Carbon Design System**: Modern, accessible UI built with IBM Carbon Design System
@@ -22,7 +22,7 @@ blogengine/
 ├── packages/
 │   └── browser-app/          # React + Vite frontend
 │       ├── src/
-│       │   ├── components/   # UI components
+│       │   ├── components/   # App-specific components & connected wrappers
 │       │   ├── store/        # Redux state management
 │       │   └── App.tsx       # Main application
 │       └── package.json
@@ -35,7 +35,7 @@ blogengine/
 ## Tech Stack
 
 - **Frontend**: React 18 + TypeScript + Vite
-- **UI Framework**: Carbon Design System (@carbon/react)
+- **UI Framework**: Carbon Design System (@carbon/react) + `@ojfbot/frame-ui-components`
 - **State Management**: Redux Toolkit
 - **Build Tool**: Vite 5
 - **Package Manager**: pnpm 9.15+
@@ -93,10 +93,11 @@ The main frontend application built with React and Vite:
 
 - **Components**:
   - `InteractiveChat` - Main chat interface with AI assistant
-  - `CondensedChat` - Persistent chat that follows across tabs
-  - `MarkdownMessage` - Renders markdown with badge action support
+  - `CondensedChat` - Persistent chat (imported from `@ojfbot/frame-ui-components`, connected via Redux wrapper)
+  - `ThreadSidebarConnected` - Thread sidebar (imported from `@ojfbot/frame-ui-components`, connected via Redux wrapper)
+  - `MarkdownMessage` - Renders markdown with badge action support (imported from `@ojfbot/frame-ui-components`)
   - `BadgeButton` - Interactive action buttons
-  - `Dashboard` - Main layout with tabs
+  - `Dashboard` - Main layout with tabs (uses shared `DashboardLayout` from `@ojfbot/frame-ui-components`)
 
 - **State Management** (Redux):
   - `chatSlice` - Chat messages, drafts, display state
@@ -134,10 +135,10 @@ public-hoist-pattern[]=@ibm/*
 ```
 
 ## Security
-
 - **Pre-commit Hooks**: Automated checks for API keys and build artifacts
 - **Gitignore**: Comprehensive ignore patterns for sensitive data
 - **Security Audit**: Run `./scripts/security-verify.sh` to check for security issues
+- **CI Secret Scanning**: TruffleHog secret detection runs automatically in the CI pipeline on every push/PR
 
 **Important**: Never commit:
 - `env.json` or `.env` files
@@ -200,7 +201,13 @@ MIT
 
 ## Related Projects
 
-- [Resume Builder](https://github.com/ojfbot/cv-builder) - AI-powered resume builder (sibling project)
+BlogEngine is part of the ojfbot fleet — a nine-repo architecture with a shell host (`@ojfbot/shell` at `frame.jim.software`), a shared component package (`@ojfbot/frame-ui-components`), and six Module Federation sub-apps:
+
+- [Resume Builder (cv-builder)](https://github.com/ojfbot/cv-builder) - AI-powered resume builder
+- [TripPlanner](https://github.com/ojfbot/TripPlanner) - Trip planning app
+- [purefoy](https://github.com/ojfbot/purefoy) - Podcast/episodes dashboard
+- [lean-canvas](https://github.com/ojfbot/lean-canvas) - Lean canvas tool
+- [core-reader](https://github.com/ojfbot/core-reader) - Reading app
 
 ---
 
