@@ -1,33 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { Provider } from 'react-redux'
-import { configureStore, createSlice } from '@reduxjs/toolkit'
-import MarkdownMessage from './MarkdownMessage'
-
-// Minimal mock store for the Redux dependency
-const chatSlice = createSlice({
-  name: 'chat',
-  initialState: { draftInput: '' },
-  reducers: {
-    setDraftInput: (state, action) => { state.draftInput = action.payload },
-  },
-})
-
-function createMockStore() {
-  return configureStore({
-    reducer: { chat: chatSlice.reducer },
-  })
-}
+import { MarkdownMessage, createSimpleBadge } from '@ojfbot/frame-ui-components'
+import '@ojfbot/frame-ui-components/styles/markdown-message'
 
 const meta: Meta<typeof MarkdownMessage> = {
   title: 'Components/MarkdownMessage',
   component: MarkdownMessage,
-  decorators: [
-    (Story) => (
-      <Provider store={createMockStore()}>
-        <Story />
-      </Provider>
-    ),
-  ],
 }
 
 export default meta
@@ -69,9 +46,9 @@ export const WithSuggestions: Story = {
   args: {
     content: 'Your draft is ready for review. What would you like to do next?',
     suggestions: [
-      { label: 'Publish Now', message: '/publish', variant: 'green' },
-      { label: 'Edit Draft', message: '/edit', variant: 'blue' },
-      { label: 'SEO Analysis', message: '/seo', variant: 'cyan' },
+      createSimpleBadge('Publish Now', '/publish', { variant: 'green' }),
+      createSimpleBadge('Edit Draft', '/edit', { variant: 'blue' }),
+      createSimpleBadge('SEO Analysis', '/seo', { variant: 'cyan' }),
     ],
     onExecute: () => {},
   },
