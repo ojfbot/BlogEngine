@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { BadgeAction } from '../../components/BadgeButton';
+import { createSimpleBadge } from '@ojfbot/frame-ui-components';
+import type { BadgeAction } from '@ojfbot/frame-ui-components';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -29,42 +30,12 @@ Your AI-powered content creation assistant. I can help you explore multiple cont
 
 **Choose an action to begin:**`,
       suggestions: [
-        {
-          label: 'Write Blog Post',
-          icon: '📝',
-          message: 'Write a blog post about TypeScript best practices',
-          variant: 'purple',
-        },
-        {
-          label: 'Create Tutorial',
-          icon: '📚',
-          message: 'Create a tutorial on React hooks',
-          variant: 'purple',
-        },
-        {
-          label: 'Generate Docs',
-          icon: '📄',
-          message: 'Generate API documentation for a REST service',
-          variant: 'cyan',
-        },
-        {
-          label: 'Draft Article',
-          icon: '✍️',
-          message: 'Draft a technical article about web performance optimization',
-          variant: 'green',
-        },
-        {
-          label: 'Content Strategy',
-          icon: '🎯',
-          message: 'Help me plan a content strategy for my tech blog',
-          variant: 'blue',
-        },
-        {
-          label: 'Brainstorm Ideas',
-          icon: '💡',
-          message: 'Brainstorm content ideas for developers learning JavaScript',
-          variant: 'teal',
-        },
+        createSimpleBadge('Write Blog Post', 'Write a blog post about TypeScript best practices', { icon: '📝', variant: 'purple' }),
+        createSimpleBadge('Create Tutorial', 'Create a tutorial on React hooks', { icon: '📚', variant: 'purple' }),
+        createSimpleBadge('Generate Docs', 'Generate API documentation for a REST service', { icon: '📄', variant: 'cyan' }),
+        createSimpleBadge('Draft Article', 'Draft a technical article about web performance optimization', { icon: '✍️', variant: 'green' }),
+        createSimpleBadge('Content Strategy', 'Help me plan a content strategy for my tech blog', { icon: '🎯', variant: 'blue' }),
+        createSimpleBadge('Brainstorm Ideas', 'Brainstorm content ideas for developers learning JavaScript', { icon: '💡', variant: 'teal' }),
       ],
     },
   ],

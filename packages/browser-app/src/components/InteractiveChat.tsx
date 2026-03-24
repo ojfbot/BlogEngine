@@ -12,7 +12,8 @@ import {
   setIsLoading,
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
-import MarkdownMessage from './MarkdownMessage';
+import { MarkdownMessage } from '@ojfbot/frame-ui-components';
+import '@ojfbot/frame-ui-components/styles/markdown-message';
 import './InteractiveChat.css';
 
 function InteractiveChat() {

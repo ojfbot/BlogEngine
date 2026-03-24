@@ -10,6 +10,8 @@ import {
   Tooltip,
 } from '@carbon/react';
 import { Menu, Close } from '@carbon/icons-react';
+import { DashboardLayout } from '@ojfbot/frame-ui-components';
+import '@ojfbot/frame-ui-components/styles/dashboard-layout';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCurrentTab } from '../store/slices/navigationSlice';
 import { TabKey, TAB_ORDER, getTabByKey } from '../models/navigation';
@@ -20,7 +22,7 @@ import WorkingMemoryDashboard from './WorkingMemoryDashboard';
 import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
 import CondensedChat from './CondensedChat';
-import ThreadSidebar from './ThreadSidebar';
+import ThreadSidebarConnected from './ThreadSidebarConnected';
 // MF isolation: Dashboard may be loaded as a Module Federation remote under the shell's
 // Provider (which has no BlogEngine slices). Import and wrap with the local store so
 // DashboardContent always resolves against the correct Redux context.
@@ -63,21 +65,17 @@ function DashboardContent({ shellMode }: DashboardProps) {
     <>
       {/* Thread sidebar for managing conversation sessions */}
       {showThreadSidebar && (
-        <ThreadSidebar
+        <ThreadSidebarConnected
           isExpanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded(!sidebarExpanded)}
         />
       )}
 
-      <div
-        className={[
-          'dashboard-wrapper',
-          showThreadSidebar && sidebarExpanded ? 'with-sidebar' : '',
-          shellMode ? 'shell-mode' : '',
-        ].filter(Boolean).join(' ')}
-        data-element="app-container"
+      <DashboardLayout
+        shellMode={shellMode}
+        sidebarExpanded={showThreadSidebar && sidebarExpanded}
       >
-        <div className="dashboard-header">
+        <DashboardLayout.Header>
           <Heading className="page-header">BlogEngine Dashboard</Heading>
 
           {/* Thread sidebar toggle button */}
@@ -95,7 +93,7 @@ function DashboardContent({ shellMode }: DashboardProps) {
               </button>
             </Tooltip>
           )}
-        </div>
+        </DashboardLayout.Header>
 
         <Tabs
           selectedIndex={currentTabIndex}
@@ -125,7 +123,7 @@ function DashboardContent({ shellMode }: DashboardProps) {
             ))}
           </TabPanels>
         </Tabs>
-      </div>
+      </DashboardLayout>
 
       {/* Show condensed chat on all non-Interactive tabs */}
       {currentTab !== TabKey.INTERACTIVE && (

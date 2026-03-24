@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import BadgeButton from './BadgeButton'
+import { BadgeButton, createSimpleBadge } from '@ojfbot/frame-ui-components'
+import '@ojfbot/frame-ui-components/styles/badge-button'
 
 const meta: Meta<typeof BadgeButton> = {
   title: 'Components/BadgeButton',
@@ -14,46 +15,28 @@ type Story = StoryObj<typeof BadgeButton>
 
 export const Default: Story = {
   args: {
-    badgeAction: {
-      label: 'Write Blog Post',
-      message: '/write-blog',
-      variant: 'purple',
-    },
+    badgeAction: createSimpleBadge('Write Blog Post', '/write-blog', { variant: 'purple' }),
     onExecute: () => {},
   },
 }
 
 export const WithIcon: Story = {
   args: {
-    badgeAction: {
-      label: 'Generate Draft',
-      icon: '\u270D\uFE0F',
-      message: '/generate-draft',
-      variant: 'blue',
-    },
+    badgeAction: createSimpleBadge('Generate Draft', '/generate-draft', { icon: '\u270D\uFE0F', variant: 'blue' }),
     onExecute: () => {},
   },
 }
 
 export const Disabled: Story = {
   args: {
-    badgeAction: {
-      label: 'Publish Article',
-      message: '/publish',
-      variant: 'green',
-      disabled: true,
-    },
+    badgeAction: createSimpleBadge('Publish Article', '/publish', { variant: 'green', disabled: true }),
     onExecute: () => {},
   },
 }
 
 export const SmallSize: Story = {
   args: {
-    badgeAction: {
-      label: 'SEO Check',
-      message: '/seo-check',
-      variant: 'cyan',
-    },
+    badgeAction: createSimpleBadge('SEO Check', '/seo-check', { variant: 'cyan' }),
     onExecute: () => {},
     size: 'sm',
   },
@@ -67,11 +50,7 @@ export const AllVariants: Story = {
         {variants.map((variant) => (
           <BadgeButton
             key={variant}
-            badgeAction={{
-              label: variant,
-              message: `/${variant}`,
-              variant,
-            }}
+            badgeAction={createSimpleBadge(variant, `/${variant}`, { variant })}
             onExecute={() => {}}
           />
         ))}
