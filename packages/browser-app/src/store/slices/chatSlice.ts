@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createSimpleBadge } from '@ojfbot/frame-ui-components';
 import type { BadgeAction } from '@ojfbot/frame-ui-components';
+import { createSimpleBadge } from '@ojfbot/frame-ui-components';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';

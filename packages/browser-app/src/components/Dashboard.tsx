@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from '@carbon/react';
 import { Menu, Close } from '@carbon/icons-react';
-import { DashboardLayout } from '@ojfbot/frame-ui-components';
+import { DashboardLayout, ErrorBoundary } from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/dashboard-layout';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCurrentTab } from '../store/slices/navigationSlice';
@@ -23,15 +23,10 @@ import NotionDashboard from './NotionDashboard';
 import PublishingDashboard from './PublishingDashboard';
 import CondensedChat from './CondensedChat';
 import ThreadSidebarConnected from './ThreadSidebarConnected';
-// MF isolation: Dashboard may be loaded as a Module Federation remote under the shell's
-// Provider (which has no BlogEngine slices). Import and wrap with the local store so
-// DashboardContent always resolves against the correct Redux context.
 import { store } from '../store';
 import './Dashboard.css';
 
 interface DashboardProps {
-  /** True when mounted inside the Frame shell host. Suppresses standalone-mode
-   *  margins and activates the flex height chain so content fills the shell frame. */
   shellMode?: boolean;
 }
 
@@ -40,7 +35,6 @@ function DashboardContent({ shellMode }: DashboardProps) {
   const currentTab = useAppSelector(state => state.navigation.currentTab);
   const currentTabIndex = useAppSelector(state => state.navigation.currentTabIndex);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const showThreadSidebar = true; // TODO: Make this configurable via settings
 
   const renderTabContent = (tabKey: TabKey) => {
     switch (tabKey) {
@@ -63,36 +57,26 @@ function DashboardContent({ shellMode }: DashboardProps) {
 
   return (
     <>
-      {/* Thread sidebar for managing conversation sessions */}
-      {showThreadSidebar && (
-        <ThreadSidebarConnected
-          isExpanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-        />
-      )}
+      <ThreadSidebarConnected
+        isExpanded={sidebarExpanded}
+        onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+      />
 
-      <DashboardLayout
-        shellMode={shellMode}
-        sidebarExpanded={showThreadSidebar && sidebarExpanded}
-      >
+      <DashboardLayout shellMode={shellMode} sidebarExpanded={sidebarExpanded}>
         <DashboardLayout.Header>
           <Heading className="page-header">BlogEngine Dashboard</Heading>
-
-          {/* Thread sidebar toggle button */}
-          {showThreadSidebar && (
-            <Tooltip
-              align="bottom-right"
-              label={sidebarExpanded ? 'Close threads' : 'Show threads'}
+          <Tooltip
+            align="bottom-right"
+            label={sidebarExpanded ? 'Close threads' : 'Show threads'}
+          >
+            <button
+              className="sidebar-toggle-btn"
+              onClick={() => setSidebarExpanded(!sidebarExpanded)}
+              aria-label="Toggle thread sidebar"
             >
-              <button
-                className="sidebar-toggle-btn"
-                onClick={() => setSidebarExpanded(!sidebarExpanded)}
-                aria-label="Toggle thread sidebar"
-              >
-                {sidebarExpanded ? <Close size={20} /> : <Menu size={20} />}
-              </button>
-            </Tooltip>
-          )}
+              {sidebarExpanded ? <Close size={20} /> : <Menu size={20} />}
+            </button>
+          </Tooltip>
         </DashboardLayout.Header>
 
         <Tabs
@@ -125,21 +109,19 @@ function DashboardContent({ shellMode }: DashboardProps) {
         </Tabs>
       </DashboardLayout>
 
-      {/* Show condensed chat on all non-Interactive tabs */}
       {currentTab !== TabKey.INTERACTIVE && (
-        <CondensedChat sidebarExpanded={showThreadSidebar && sidebarExpanded} />
+        <CondensedChat sidebarExpanded={sidebarExpanded} />
       )}
     </>
   );
 }
 
-// Self-contained export for Module Federation. Carries its own store so Redux
-// slices always resolve correctly regardless of which Provider is above.
-// In standalone mode App.tsx wraps with the same store singleton — harmless double-wrap.
 function Dashboard({ shellMode }: DashboardProps) {
   return (
     <Provider store={store}>
-      <DashboardContent shellMode={shellMode} />
+      <ErrorBoundary appName="blogengine" boundaryName="dashboard">
+        <DashboardContent shellMode={shellMode} />
+      </ErrorBoundary>
     </Provider>
   );
 }

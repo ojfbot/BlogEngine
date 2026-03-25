@@ -1,8 +1,7 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import {
   TextArea,
   Button,
-  Tile,
 } from '@carbon/react';
 import { SendAlt } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
@@ -12,8 +11,14 @@ import {
   setIsLoading,
   markMessagesAsRead,
 } from '../store/slices/chatSlice';
-import { MarkdownMessage } from '@ojfbot/frame-ui-components';
+import {
+  ChatMessage,
+  MarkdownMessage,
+  getChatMessage,
+} from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/markdown-message';
+import '@ojfbot/frame-ui-components/styles/badge-button';
+import type { BadgeAction } from '@ojfbot/frame-ui-components';
 import './InteractiveChat.css';
 
 function InteractiveChat() {
@@ -33,11 +38,11 @@ function InteractiveChat() {
     }
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!draftInput.trim() || isLoading) return;
+  const handleSend = useCallback(async (messageText?: string) => {
+    const text = messageText || draftInput.trim();
+    if (!text || isLoading) return;
 
-    const userMessage = draftInput;
-    dispatch(addMessage({ role: 'user', content: userMessage }));
+    dispatch(addMessage({ role: 'user', content: text }));
     dispatch(setDraftInput(''));
     dispatch(setIsLoading(true));
 
@@ -49,7 +54,12 @@ function InteractiveChat() {
       }));
       dispatch(setIsLoading(false));
     }, 1000);
-  };
+  }, [draftInput, isLoading, dispatch]);
+
+  const handleExecute = useCallback((action: BadgeAction) => {
+    const msg = getChatMessage(action);
+    if (msg) handleSend(msg);
+  }, [handleSend]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -62,28 +72,23 @@ function InteractiveChat() {
     <div className="interactive-chat">
       <div className="chat-messages" ref={messagesContainerRef}>
         {messages.map((msg, idx) => (
-          <Tile key={idx} className={`message-tile ${msg.role}`}>
-            <div className="message-header">
-              <strong>{msg.role === 'user' ? '👤 You' : '🤖 Assistant'}</strong>
-            </div>
-            <div className="message-content">
-              {msg.role === 'user' ? (
-                <div className="user-message">{msg.content}</div>
-              ) : (
-                <MarkdownMessage
-                  content={msg.content}
-                  suggestions={msg.suggestions}
-                />
-              )}
-            </div>
-          </Tile>
+          <ChatMessage key={idx} role={msg.role}>
+            {msg.role === 'user' ? (
+              <span style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</span>
+            ) : (
+              <MarkdownMessage
+                content={msg.content}
+                suggestions={msg.suggestions}
+                onExecute={handleExecute}
+                compact
+              />
+            )}
+          </ChatMessage>
         ))}
         {isLoading && (
-          <div className="message assistant">
-            <div className="message-content loading">
-              Thinking...
-            </div>
-          </div>
+          <ChatMessage role="assistant" isStreaming>
+            <span>Thinking...</span>
+          </ChatMessage>
         )}
       </div>
 
@@ -101,7 +106,7 @@ function InteractiveChat() {
         <Button
           kind="primary"
           renderIcon={SendAlt}
-          onClick={handleSend}
+          onClick={() => handleSend()}
           disabled={!draftInput.trim() || isLoading}
         >
           Send
