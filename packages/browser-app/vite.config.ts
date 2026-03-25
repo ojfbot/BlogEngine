@@ -58,9 +58,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // Treat frame-ui-components as source (file: linked, not pre-built)
+  optimizeDeps: {
+    exclude: ['@ojfbot/frame-ui-components'],
+  },
   server: {
     port: 3005,
     cors: true, // required: shell host fetches remoteEntry.js cross-origin
+    fs: {
+      allow: ['../../..'],
+    },
   },
   preview: {
     port: 3005,
