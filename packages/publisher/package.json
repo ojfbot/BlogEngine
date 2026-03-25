@@ -1,0 +1,36 @@
+{
+  "name": "@blogengine/publisher",
+  "version": "0.1.0",
+  "description": "Publishing platform integrations for BlogEngine",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./exporters/*": "./dist/exporters/*.js",
+    "./platforms/*": "./dist/platforms/*.js",
+    "./formatters/*": "./dist/formatters/*.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@blogengine/agent-core": "workspace:*",
+    "@octokit/rest": "^21.0.2",
+    "simple-git": "^3.27.0",
+    "axios": "^1.7.9",
+    "pino": "^9.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

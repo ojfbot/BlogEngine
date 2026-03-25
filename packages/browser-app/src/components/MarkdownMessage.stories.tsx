@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { MarkdownMessage, createSimpleBadge } from '@ojfbot/frame-ui-components'
 import '@ojfbot/frame-ui-components/styles/markdown-message'
+import '@ojfbot/frame-ui-components/styles/badge-button'
 
 const meta: Meta<typeof MarkdownMessage> = {
   title: 'Components/MarkdownMessage',

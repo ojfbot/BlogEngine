@@ -1,10 +1,16 @@
 import { useCallback } from 'react';
 import { IconButton } from '@carbon/react';
 import { Microphone } from '@carbon/icons-react';
-import { ChatShell, ChatMessage, MarkdownMessage, getChatMessage } from '@ojfbot/frame-ui-components';
-import type { ChatDisplayState, BadgeAction } from '@ojfbot/frame-ui-components';
+import {
+  ChatShell,
+  ChatMessage,
+  MarkdownMessage,
+  getChatMessage,
+} from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/chat-shell';
 import '@ojfbot/frame-ui-components/styles/markdown-message';
+import '@ojfbot/frame-ui-components/styles/badge-button';
+import type { ChatDisplayState, BadgeAction } from '@ojfbot/frame-ui-components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   addMessage,
@@ -17,19 +23,19 @@ interface CondensedChatProps {
   sidebarExpanded?: boolean;
 }
 
-function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
+export default function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
   const dispatch = useAppDispatch();
   const messages = useAppSelector(state => state.chat.messages);
   const draftInput = useAppSelector(state => state.chat.draftInput);
   const isLoading = useAppSelector(state => state.chat.isLoading);
-  const displayState = useAppSelector(state => state.chat.displayState);
+  const displayState = useAppSelector(state => state.chat.displayState) as ChatDisplayState;
   const unreadCount = useAppSelector(state => state.chat.unreadCount);
   const chatSummary = useAppSelector(state => state.chat.chatSummary);
 
-  const handleSend = useCallback((messageText: string) => {
-    if (isLoading) return;
+  const handleSend = useCallback((message: string) => {
+    if (!message || isLoading) return;
 
-    dispatch(addMessage({ role: 'user', content: messageText }));
+    dispatch(addMessage({ role: 'user', content: message }));
     dispatch(setDraftInput(''));
     dispatch(setIsLoading(true));
 
@@ -37,66 +43,60 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
     setTimeout(() => {
       dispatch(addMessage({
         role: 'assistant',
-        content: 'Response from condensed chat. API integration coming in Phase 2!'
+        content: 'Response from condensed chat. API integration coming in Phase 2!',
       }));
       dispatch(setIsLoading(false));
     }, 1000);
   }, [isLoading, dispatch]);
 
-  const handleExecute = useCallback((badgeAction: BadgeAction) => {
-    const message = getChatMessage(badgeAction);
-    console.log('[CondensedChat] handleExecute called with:', message);
-    if (message) {
-      dispatch(setDraftInput(message));
-      // Auto-send the message after a brief delay
-      setTimeout(() => handleSend(message), 200);
-    }
-  }, [dispatch, handleSend]);
-
-  const handleDisplayStateChange = useCallback((state: ChatDisplayState) => {
-    dispatch(setDisplayState(state));
-  }, [dispatch]);
-
-  const microphoneButton = (
-    <IconButton
-      label="Voice input"
-      onClick={() => {
-        console.log('[CondensedChat] Microphone button clicked - functionality to be implemented');
-        // TODO: Implement voice input functionality
-      }}
-      disabled={isLoading}
-      kind="ghost"
-      size="sm"
-    >
-      <Microphone size={20} />
-    </IconButton>
-  );
+  const handleExecute = useCallback((action: BadgeAction) => {
+    const msg = getChatMessage(action);
+    if (msg) handleSend(msg);
+  }, [handleSend]);
 
   return (
     <ChatShell
       displayState={displayState}
-      onDisplayStateChange={handleDisplayStateChange}
+      onDisplayStateChange={(state) => dispatch(setDisplayState(state))}
       sidebarExpanded={sidebarExpanded}
-      title={chatSummary ? `AI Assistant - ${chatSummary}` : 'AI Assistant'}
+      title="AI Assistant"
+      chatSummary={chatSummary}
       isLoading={isLoading}
       unreadCount={unreadCount}
       draftInput={draftInput}
       onDraftChange={(value) => dispatch(setDraftInput(value))}
       onSend={handleSend}
+      onInputFocus={() => {
+        if (displayState !== 'expanded') {
+          dispatch(setDisplayState('expanded'));
+        }
+      }}
       placeholder="Ask me anything..."
       inputDisabled={isLoading}
-      inputExtra={microphoneButton}
+      inputExtra={
+        <IconButton
+          label="Voice input"
+          onClick={() => {
+            // TODO: Implement voice input functionality
+          }}
+          disabled={isLoading}
+          kind="ghost"
+          size="sm"
+        >
+          <Microphone size={20} />
+        </IconButton>
+      }
     >
       {messages.map((msg, idx) => (
         <ChatMessage key={idx} role={msg.role}>
           {msg.role === 'user' ? (
-            <div className="user-message" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+            <span style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</span>
           ) : (
             <MarkdownMessage
               content={msg.content}
               suggestions={msg.suggestions}
               onExecute={handleExecute}
-              compact={true}
+              compact
             />
           )}
         </ChatMessage>
@@ -104,5 +104,3 @@ function CondensedChat({ sidebarExpanded = false }: CondensedChatProps) {
     </ChatShell>
   );
 }
-
-export default CondensedChat;

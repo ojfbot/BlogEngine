@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { ThreadSidebar } from '@ojfbot/frame-ui-components';
-import type { ThreadItem } from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/thread-sidebar';
+import type { ThreadItem } from '@ojfbot/frame-ui-components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   fetchThreads,
@@ -17,20 +17,10 @@ interface ThreadSidebarConnectedProps {
   onToggle: () => void;
 }
 
-function ThreadSidebarConnected({ isExpanded, onToggle }: ThreadSidebarConnectedProps) {
+export default function ThreadSidebarConnected({ isExpanded, onToggle }: ThreadSidebarConnectedProps) {
   const dispatch = useAppDispatch();
-  const { threads: rawThreads, currentThreadId, isLoading, isCreatingThread } = useAppSelector(
+  const { threads, currentThreadId, isLoading, isCreatingThread } = useAppSelector(
     state => state.threads
-  );
-
-  // Map Thread (title optional) to ThreadItem (title required)
-  const threads: ThreadItem[] = useMemo(
-    () => rawThreads.map(t => ({
-      threadId: t.threadId,
-      title: t.title ?? 'Untitled conversation',
-      updatedAt: t.updatedAt,
-    })),
-    [rawThreads]
   );
 
   // Load threads on mount
@@ -39,50 +29,42 @@ function ThreadSidebarConnected({ isExpanded, onToggle }: ThreadSidebarConnected
     dispatch(fetchThreads({ userId }));
   }, [dispatch]);
 
-  const handleCreateThread = async () => {
-    const userId = getUserId();
-    const timestamp = new Date().toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-    await dispatch(createThread({
-      userId,
-      title: `Conversation - ${timestamp}`,
-    }));
-  };
-
-  const handleSelectThread = (threadId: string) => {
-    if (currentThreadId !== threadId) {
-      dispatch(setCurrentThreadId(threadId));
-      dispatch(fetchThread(threadId));
-    }
-  };
-
-  const handleDeleteThread = (threadId: string) => {
-    dispatch(deleteThread(threadId));
-  };
-
-  const handleRefresh = () => {
-    const userId = getUserId();
-    dispatch(fetchThreads({ userId }));
-  };
+  const threadItems: ThreadItem[] = threads.map(t => ({
+    threadId: t.threadId,
+    title: t.title || 'Untitled conversation',
+    updatedAt: t.updatedAt,
+  }));
 
   return (
     <ThreadSidebar
       isExpanded={isExpanded}
       onToggle={onToggle}
-      threads={threads}
+      threads={threadItems}
       currentThreadId={currentThreadId}
       isLoading={isLoading}
       isCreatingThread={isCreatingThread}
-      onCreateThread={handleCreateThread}
-      onSelectThread={handleSelectThread}
-      onDeleteThread={handleDeleteThread}
-      onRefresh={handleRefresh}
+      title="Conversations"
+      onCreateThread={() => {
+        const userId = getUserId();
+        const timestamp = new Date().toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+        dispatch(createThread({ userId, title: `Conversation - ${timestamp}` }));
+      }}
+      onSelectThread={(threadId) => {
+        if (currentThreadId !== threadId) {
+          dispatch(setCurrentThreadId(threadId));
+          dispatch(fetchThread(threadId));
+        }
+      }}
+      onDeleteThread={(threadId) => dispatch(deleteThread(threadId))}
+      onRefresh={() => {
+        const userId = getUserId();
+        dispatch(fetchThreads({ userId }));
+      }}
     />
   );
 }
-
-export default ThreadSidebarConnected;
