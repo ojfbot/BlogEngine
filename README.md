@@ -198,10 +198,22 @@ We use conventional commits for clear history:
 
 MIT
 
-## Related Projects
+## Frame OS Ecosystem
 
-- [Resume Builder](https://github.com/ojfbot/cv-builder) - AI-powered resume builder (sibling project)
+Part of [Frame OS](https://github.com/ojfbot/shell) — an AI-native application OS.
 
----
-
-Built with ❤️ using React, TypeScript, and Carbon Design System
+| Repo | Description |
+|------|-------------|
+| [shell](https://github.com/ojfbot/shell) | Module Federation host + frame-agent LLM gateway |
+| [core](https://github.com/ojfbot/core) | Workflow framework — 30+ slash commands + TypeScript engine |
+| [cv-builder](https://github.com/ojfbot/cv-builder) | AI-powered resume builder with LangGraph agents |
+| **blogengine** | **AI blog content creation platform (this repo)** |
+| [TripPlanner](https://github.com/ojfbot/TripPlanner) | AI trip planner with 11-phase pipeline |
+| [core-reader](https://github.com/ojfbot/core-reader) | Documentation viewer for the core framework |
+| [lean-canvas](https://github.com/ojfbot/lean-canvas) | AI-powered lean canvas business model tool |
+| [gastown-pilot](https://github.com/ojfbot/gastown-pilot) | Multi-agent coordination dashboard |
+| [seh-study](https://github.com/ojfbot/seh-study) | NASA SEH spaced repetition study tool |
+| [daily-logger](https://github.com/ojfbot/daily-logger) | Automated daily dev blog pipeline |
+| [purefoy](https://github.com/ojfbot/purefoy) | Roger Deakins cinematography knowledge base |
+| [MrPlug](https://github.com/ojfbot/MrPlug) | Chrome extension for AI UI feedback |
+| [frame-ui-components](https://github.com/ojfbot/frame-ui-components) | Shared component library (Carbon DS) |
