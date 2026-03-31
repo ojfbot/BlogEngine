@@ -7,10 +7,8 @@ import {
   TabPanels,
   TabPanel,
   Heading,
-  Tooltip,
 } from '@carbon/react';
-import { Menu, Close } from '@carbon/icons-react';
-import { DashboardLayout, ErrorBoundary } from '@ojfbot/frame-ui-components';
+import { DashboardLayout, ErrorBoundary, SidebarToggle } from '@ojfbot/frame-ui-components';
 import '@ojfbot/frame-ui-components/styles/dashboard-layout';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setCurrentTab } from '../store/slices/navigationSlice';
@@ -65,18 +63,7 @@ function DashboardContent({ shellMode }: DashboardProps) {
       <DashboardLayout shellMode={shellMode} sidebarExpanded={sidebarExpanded}>
         <DashboardLayout.Header>
           <Heading className="page-header">BlogEngine Dashboard</Heading>
-          <Tooltip
-            align="bottom-right"
-            label={sidebarExpanded ? 'Close threads' : 'Show threads'}
-          >
-            <button
-              className="sidebar-toggle-btn"
-              onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              aria-label="Toggle thread sidebar"
-            >
-              {sidebarExpanded ? <Close size={20} /> : <Menu size={20} />}
-            </button>
-          </Tooltip>
+          <SidebarToggle isExpanded={sidebarExpanded} onToggle={() => setSidebarExpanded(!sidebarExpanded)} />
         </DashboardLayout.Header>
 
         <Tabs
