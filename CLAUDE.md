@@ -299,3 +299,10 @@ Branch protection: PR required, rebase-only merge (GitHub Ruleset).
 **Module resolution errors**: All imports must use `.js` extensions. TypeScript will compile `.ts` to `.js` but imports must reference `.js`.
 
 **Pre-commit hook failures**: If blocked by security scan, check for API keys in staged files. Remove and re-stage.
+
+## Deployment
+
+**NEVER deploy directly to production** via CLI (`vercel deploy --prod`, `vercel promote`, etc.).
+All production deployments go through the GitHub PR → CI → merge → automated deploy pipeline.
+The only exception is `workflow_dispatch` for manual CI triggers.
+Local Vercel CLI usage is restricted to preview deploys only.
