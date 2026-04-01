@@ -64,7 +64,7 @@ router.post('/', async (req, res, next) => {
  * GET /api/v2/threads/:threadId
  * Get a specific thread with its messages
  */
-router.get('/:threadId', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:threadId', async (req: Request<{ threadId: string }>, res: Response, next: NextFunction) => {
   try {
     const threadId = req.params.threadId;
     if (!threadId) {
@@ -86,7 +86,7 @@ router.get('/:threadId', async (req: Request, res: Response, next: NextFunction)
  * PUT /api/v2/threads/:threadId
  * Update a thread
  */
-router.put('/:threadId', async (req: Request, res: Response, next: NextFunction) => {
+router.put('/:threadId', async (req: Request<{ threadId: string }>, res: Response, next: NextFunction) => {
   try {
     const threadId = req.params.threadId;
     if (!threadId) {
