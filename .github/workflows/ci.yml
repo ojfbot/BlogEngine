@@ -13,10 +13,8 @@ jobs:
           node-version: '22'
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Build agent-core types (needed by downstream type-check)
-        run: pnpm --filter @blogengine/agent-core build
+      - run: pnpm build
       - name: Type-check (tsc --noEmit)
         run: pnpm type-check
-      - run: pnpm build
       - name: Build Storybook
         run: pnpm --filter @blogengine/browser-app build-storybook
