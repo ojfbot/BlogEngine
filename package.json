@@ -15,6 +15,7 @@
     "dev:all": "concurrently \"pnpm dev:api\" \"pnpm dev\"",
     "build": "pnpm --recursive --if-present build",
     "type-check": "pnpm --recursive --if-present type-check",
+    "test": "pnpm --recursive --if-present test",
     "clean": "pnpm --recursive --if-present clean && rm -rf node_modules",
     "lint": "pnpm --recursive --if-present lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
