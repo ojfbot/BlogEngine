@@ -9,6 +9,7 @@ import authRouter from './routes/v2/auth.js';
 import postsRouter from './routes/v2/posts.js';
 import toolEndpointsRouter from './routes/v2/tool-endpoints.js';
 import toolsRouter from './routes/tools.js';
+import beadsRouter from './routes/beads.js';
 import { requireAuth } from './middleware/auth.js';
 import { RATE_LIMIT, SERVER } from './constants.js';
 
@@ -69,6 +70,9 @@ app.get('/health', (_req, res) => {
 
 // Capability manifest — rate-limited, no auth required
 app.use('/api/tools', generalLimiter, toolsRouter);
+
+// Bead projection — ADR-0016 compliant, no auth (Mayor aggregation)
+app.use('/api/beads', generalLimiter, beadsRouter);
 
 // Auth endpoint — no JWT required to issue a token
 app.use('/api/v2/auth', generalLimiter, authRouter);
