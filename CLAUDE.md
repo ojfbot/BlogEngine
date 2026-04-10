@@ -47,13 +47,12 @@ pnpm --filter @blogengine/api dev
 
 ### Testing & Quality
 
+### Testing & Quality
+
 ```bash
-# No test suite currently exists - tests should be added using vitest
-# vitest is configured in the root devDependencies
+pnpm test             # Run all package tests from root
 
 pnpm lint             # Lint all packages
-pnpm format           # Format with Prettier
-```
 
 ### Security
 
@@ -112,7 +111,7 @@ Configuration is loaded via `@blogengine/agent-core/utils/config.ts`:
 
 **@blogengine/agent-graph**
 - LangGraph multi-agent orchestration (9 nodes, SQLite checkpointer)
-- Nodes: OrchestratorNode, MediaIngestionNode, ConversationContextNode, ArticleGeneratorNode, PodcastResponderNode, ToneCheckerNode (hard cap=2), EditorNode, SEOOptimizerNode, RagRetrievalNode (Phase D stub)
+- Nodes: OrchestratorNode, MediaIngestionNode, ConversationContextNode, ArticleGeneratorNode, PodcastResponderNode (decomposed into sub-components), ToneCheckerNode (hard cap=2), EditorNode, SEOOptimizerNode, RagRetrievalNode (Phase D stub)
 - State: `BlogEngineState` with `messagesReducer` and `nodeOrderReducer` accumulators
 - Depends on: agent-core, notion-integration, rag-service
 - Uses `@langchain/anthropic`, `@langchain/langgraph`, `better-sqlite3`
@@ -127,7 +126,7 @@ Configuration is loaded via `@blogengine/agent-core/utils/config.ts`:
 - React 18 + TypeScript + Vite
 - IBM Carbon Design System (v1.67) for UI
 - Redux Toolkit for state management
-- Components: InteractiveChat, CondensedChat, Dashboard, ProductLibrary, WorkingMemoryDashboard, NotionDashboard, PublishingDashboard, GenerateDashboard, PodcastResponder, ThreadSidebar
+- Components: InteractiveChat, CondensedChat, Dashboard, ProductLibrary, WorkingMemoryDashboard (decomposed into focused sub-components), NotionDashboard, PublishingDashboard, GenerateDashboard, PodcastResponder (decomposed into sub-components), ThreadSidebar
 - Multithread conversation management with collapsible sidebar
 - API client v2 with Server-Sent Events (SSE) for streaming chat
 - Product-oriented framing: focus on published products across platforms
@@ -269,6 +268,9 @@ BlogEngine is a **Module Federation remote** in the Frame OS cluster (see `domai
 - `./Settings` — bare settings panel loaded inside the shell's `SettingsModal`
 
 ### Shared singletons (must match shell exactly)
+
+Note: `@ojfbot/frame-ui-components` is now consumed from npm (`^1.0.1`) rather than a `file:` reference (see commit 6ec5f5e).
+
 ```typescript
 shared: {
   react:              { singleton: true, requiredVersion: '^18.3.1' },
