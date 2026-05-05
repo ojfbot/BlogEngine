@@ -47,12 +47,11 @@ pnpm --filter @blogengine/api dev
 
 ### Testing & Quality
 
-### Testing & Quality
-
 ```bash
 pnpm test             # Run all package tests from root
 
 pnpm lint             # Lint all packages
+```
 
 ### Security
 
@@ -286,7 +285,7 @@ shared: {
 For MF local dev: `pnpm --filter @blogengine/browser-app build && pnpm --filter @blogengine/browser-app preview`
 
 ### Shell Redux singleton
-Settings panels use `useAppSelector` and `useAppDispatch` from the shell's Redux store singleton. Settings state lives in `shell/packages/shell-app/src/store/slices/settingsSlice.ts` (ADR-0011).
+Settings panels use `useAppSelector` and `useAppDispatch` from the shell's Redux store singleton. Settings state lives in `shell/packages/shell-app/src/store/slices/settingsSlice.ts`.
 
 ### Production deployment
 blog.jim.software (Vercel) — auto-deploys on push to main.
