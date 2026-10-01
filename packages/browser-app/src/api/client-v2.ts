@@ -8,6 +8,15 @@ import type {
 } from '@blogengine/agent-core';
 
 /**
+ * Default API base URL. Loopback only in dev — a production bundle must never
+ * reach for localhost (it triggers the browser's Local Network Access prompt
+ * for every visitor). Empty means "no API configured".
+ */
+export const DEFAULT_API_BASE_URL: string =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? 'http://localhost:3006/api/v2' : '');
+
+/**
  * API Client V2 for thread-based conversations
  */
 export class ApiClientV2 {
@@ -15,14 +24,19 @@ export class ApiClientV2 {
   private baseUrl: string;
 
   constructor(baseUrl?: string) {
-    // Use environment variable if available, otherwise fallback to localhost
-    this.baseUrl = baseUrl || import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api/v2';
+    this.baseUrl = baseUrl || DEFAULT_API_BASE_URL;
     this.client = axios.create({
       baseURL: this.baseUrl,
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
       },
+    });
+    this.client.interceptors.request.use((config) => {
+      if (!this.baseUrl) {
+        return Promise.reject(new Error('API not configured'));
+      }
+      return config;
     });
   }
 

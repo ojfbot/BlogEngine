@@ -12,6 +12,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: No loopback URLs in browser bundle
+        run: pnpm check:no-loopback
       - name: Type-check (tsc --noEmit)
         run: pnpm type-check
       - name: Build Storybook

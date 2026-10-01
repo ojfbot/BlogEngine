@@ -10,6 +10,7 @@
   },
   "packageManager": "pnpm@9.15.4",
   "scripts": {
+    "check:no-loopback": "sh scripts/check-no-loopback.sh",
     "dev": "pnpm --filter @blogengine/browser-app dev",
     "dev:api": "pnpm --filter @blogengine/api dev",
     "dev:all": "concurrently \"pnpm dev:api\" \"pnpm dev\"",
